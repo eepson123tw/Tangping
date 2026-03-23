@@ -104,9 +104,22 @@ export function simulate(input: SimulationInput): SimulationResult {
     if (balance <= 0) break
   }
 
+  // 最後一個月按比例計算（存款不夠撐完整月）
+  let fractionalMonths = month
+  if (month > 0 && balance < 0) {
+    const lastSnapshot = timeline[timeline.length - 1]
+    const prevBalance = timeline[timeline.length - 2]?.balance ?? savings
+    const lastExpenseNet = lastSnapshot.expense - lastSnapshot.interest
+    if (lastExpenseNet > 0) {
+      // 上個月底的餘額能撐最後這個月的幾成
+      const fraction = prevBalance / lastExpenseNet
+      fractionalMonths = month - 1 + Math.min(fraction, 1)
+    }
+  }
+
   const totalMonths = month
-  const totalDays = Math.round(totalMonths * 30.44) // 平均每月天數
-  const totalYears = totalMonths / 12
+  const totalDays = Math.max(0, Math.round(fractionalMonths * 30.44))
+  const totalYears = fractionalMonths / 12
 
   return {
     totalDays,

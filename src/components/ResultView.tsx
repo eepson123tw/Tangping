@@ -58,7 +58,10 @@ export default function ResultView({ result, city, onReset }: Props) {
   const bobaCount = Math.round(result.totalSpent / 65)
 
   const handleShare = async () => {
-    const text = `我的躺平人格是「${personality.emoji} ${personality.name}」！\n在${city.name}可以躺平 ${years > 0 ? `${years}年` : ''}${months}個月（${result.totalDays}天）\n比 ${percentile}% 的人能躺更久\n\n${personality.oneliner}\n\n躺平模擬器`
+    const durationText = result.totalDays < 30
+      ? `${result.totalDays} 天`
+      : `${years > 0 ? `${years}年` : ''}${months}個月（${result.totalDays}天）`
+    const text = `我的躺平人格是「${personality.emoji} ${personality.name}」！\n在${city.name}可以躺平 ${durationText}\n比 ${percentile}% 的人能躺更久\n\n${personality.oneliner}\n\n躺平模擬器`
     if (navigator.share) {
       try {
         await navigator.share({ title: '躺平模擬器', text })
@@ -130,32 +133,52 @@ export default function ResultView({ result, city, onReset }: Props) {
 
           {/* Big numbers with gradient */}
           <div className="flex items-baseline justify-center gap-1">
-            {years > 0 && (
+            {result.totalDays === 0 ? (
+              <>
+                <span className="text-5xl md:text-6xl font-black text-destructive">0</span>
+                <span className="text-lg text-muted-foreground font-medium">天</span>
+              </>
+            ) : result.totalDays < 30 ? (
               <>
                 <CountUp
-                  value={years}
+                  value={result.totalDays}
                   className="text-7xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
                   duration={1.5}
                 />
-                <span className="text-lg text-muted-foreground font-medium">年</span>
+                <span className="text-lg text-muted-foreground font-medium">天</span>
+              </>
+            ) : (
+              <>
+                {years > 0 && (
+                  <>
+                    <CountUp
+                      value={years}
+                      className="text-7xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
+                      duration={1.5}
+                    />
+                    <span className="text-lg text-muted-foreground font-medium">年</span>
+                  </>
+                )}
+                <CountUp
+                  value={months}
+                  className="text-7xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
+                  duration={1.5}
+                />
+                <span className="text-lg text-muted-foreground font-medium">個月</span>
               </>
             )}
-            <CountUp
-              value={months}
-              className="text-7xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
-              duration={1.5}
-            />
-            <span className="text-lg text-muted-foreground font-medium">個月</span>
           </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="text-muted-foreground text-sm mt-1"
-          >
-            約 {result.totalDays.toLocaleString('zh-TW')} 天
-          </motion.p>
+          {result.totalDays >= 30 && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="text-muted-foreground text-sm mt-1"
+            >
+              約 {result.totalDays.toLocaleString('zh-TW')} 天
+            </motion.p>
+          )}
         </motion.div>
 
         {/* Personality description + percentile */}
