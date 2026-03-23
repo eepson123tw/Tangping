@@ -11,9 +11,9 @@ test.describe('躺平模擬器 E2E', () => {
     // Title
     await expect(page.locator('h1')).toBeVisible()
 
-    // Savings input with default 1,000,000
+    // Savings input with default 87
     const savingsInput = page.locator('#savings')
-    await expect(savingsInput).toHaveValue('1,000,000')
+    await expect(savingsInput).toHaveValue('87')
 
     // City buttons visible
     await expect(page.getByRole('button', { name: '台北市' })).toBeVisible()
@@ -35,8 +35,13 @@ test.describe('躺平模擬器 E2E', () => {
     await expect(page.getByText('請先輸入你的存款金額')).toBeVisible()
   })
 
-  test('full flow: input → loading → result with default 1M', async ({ page }) => {
-    // Click submit with default values
+  test('full flow: input → loading → result with 1M savings', async ({ page }) => {
+    // Enter 1M savings
+    const savingsInput = page.locator('#savings')
+    await savingsInput.clear()
+    await savingsInput.fill('1000000')
+
+    // Click submit
     await page.getByRole('button', { name: '開始躺平' }).click()
 
     // Loading screen
@@ -45,7 +50,7 @@ test.describe('躺平模擬器 E2E', () => {
     // Wait for result page (loading takes ~2.2s)
     await expect(page.getByText('你可以躺')).toBeVisible({ timeout: 5000 })
 
-    // Should show duration
+    // Should show duration in months
     await expect(page.getByText('個月', { exact: true })).toBeVisible()
 
     // Should show personality

@@ -20,7 +20,7 @@ function parseFormattedNumber(s: string): number {
 }
 
 export default function InputForm({ onResult }: Props) {
-  const [savings, setSavings] = useState('1,000,000')
+  const [savings, setSavings] = useState('87')
   const [salary, setSalary] = useState('')
   const [cityIndex, setCityIndex] = useState(0)
   const [customExpense, setCustomExpense] = useState('')
