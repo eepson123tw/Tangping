@@ -34,32 +34,40 @@ export default function ShareCard({
 
     try {
       const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: null,
+        backgroundColor: '#0a1a1f',
         scale: 2,
         useCORS: true,
+        logging: false,
+        // Force computed styles to avoid oklch issues
+        onclone: (doc) => {
+          const el = doc.querySelector('[data-share-card]') as HTMLElement
+          if (el) el.style.background = 'linear-gradient(160deg, #0a1a1f 0%, #0d2428 30%, #111820 60%, #0a1215 100%)'
+        },
       })
 
-      // Try native share first (mobile), then download
-      canvas.toBlob(async (blob) => {
-        if (!blob) return
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, 'image/png')
+      )
 
-        if (navigator.share) {
-          try {
-            const file = new File([blob], 'tangping-result.png', { type: 'image/png' })
-            await navigator.share({
-              files: [file],
-              title: '躺平模擬器',
-            })
-          } catch {
-            downloadBlob(blob)
-          }
-        } else {
+      if (!blob) {
+        setSaving(false)
+        return
+      }
+
+      // Try native share first (mobile), then download
+      if (navigator.share && navigator.canShare?.({ files: [new File([], '')] })) {
+        try {
+          const file = new File([blob], 'tangping-result.png', { type: 'image/png' })
+          await navigator.share({ files: [file], title: '躺平模擬器' })
+        } catch {
           downloadBlob(blob)
         }
-
-        setSaving(false)
-      }, 'image/png')
-    } catch {
+      } else {
+        downloadBlob(blob)
+      }
+    } catch (err) {
+      console.error('ShareCard save failed:', err)
+    } finally {
       setSaving(false)
     }
   }, [saving])
@@ -84,6 +92,7 @@ export default function ShareCard({
           {/* The actual card to be captured */}
           <div
             ref={cardRef}
+            data-share-card
             className="w-[270px] rounded-2xl overflow-hidden"
             style={{
               aspectRatio: '9/16',
@@ -233,6 +242,12 @@ function downloadBlob(blob: Blob) {
   const a = document.createElement('a')
   a.href = url
   a.download = 'tangping-result.png'
+  a.style.display = 'none'
+  document.body.appendChild(a)
   a.click()
-  URL.revokeObjectURL(url)
+  // Delay cleanup so browser can start the download
+  setTimeout(() => {
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }, 100)
 }
