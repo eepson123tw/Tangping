@@ -29,6 +29,10 @@ export interface SimulationResult {
   finalBalance: number
   totalSpent: number
   totalInterestEarned: number
+  /** 初始存款（用於人格 & 百分位） */
+  initialSavings: number
+  /** 每月基本開銷（用於人格判定） */
+  monthlyExpense: number
 }
 
 /**
@@ -112,5 +116,7 @@ export function simulate(input: SimulationInput): SimulationResult {
     finalBalance: Math.max(0, balance),
     totalSpent,
     totalInterestEarned,
+    initialSavings: savings,
+    monthlyExpense: baseExpense,
   }
 }

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import type { MonthSnapshot } from '../utils/simulator'
+import type { MonthSnapshot } from '@/utils/simulator'
 
 interface Props {
   timeline: MonthSnapshot[]
@@ -12,8 +12,7 @@ export default function BalanceChart({ timeline, className = '' }: Props) {
     const max = Math.max(...timeline.map((s) => s.balance))
     const total = timeline.length - 1
 
-    // Reduce data points for smoother rendering
-    const step = Math.max(1, Math.floor(total / 100))
+    const step = Math.max(1, Math.floor(total / 80))
     const sampled = timeline.filter((_, i) => i % step === 0 || i === total)
 
     const pts = sampled.map((s) => {
@@ -26,98 +25,95 @@ export default function BalanceChart({ timeline, className = '' }: Props) {
   }, [timeline])
 
   const polylinePoints = points.join(' ')
-  // Create area fill
   const areaPoints = `0,100 ${polylinePoints} 100,100`
 
   const yearMarkers = useMemo(() => {
     const markers = []
-    for (let y = 1; y * 12 < totalMonths; y++) {
-      markers.push({
-        x: (y * 12 / totalMonths) * 100,
-        label: `${y}年`,
-      })
+    const maxYears = Math.min(10, Math.ceil(totalMonths / 12))
+    for (let y = 1; y <= maxYears; y++) {
+      if (y * 12 <= totalMonths) {
+        markers.push({ x: (y * 12 / totalMonths) * 100, label: `${y}年` })
+      }
     }
     return markers
   }, [totalMonths])
 
+  // Find midpoint for annotation
+  const halfMonthX = totalMonths > 0 ? (Math.floor(totalMonths / 2) / totalMonths) * 100 : 50
+  const halfBalance = timeline[Math.floor(timeline.length / 2)]?.balance ?? 0
+  const halfBalanceLabel = `NT$ ${Math.round(halfBalance).toLocaleString('zh-TW')}`
+
   return (
-    <div className={`relative ${className}`}>
-      <div className="flex justify-between text-xs text-gray-600 mb-1">
-        <span>NT$ {maxBalance.toLocaleString('zh-TW')}</span>
-        <span>存款餘額</span>
+    <div className={className}>
+      <div className="flex justify-between items-baseline mb-2">
+        <p className="text-xs font-medium text-foreground/80">存款餘額變化</p>
+        <span className="text-[10px] text-muted-foreground">NT$ {maxBalance.toLocaleString('zh-TW')}</span>
       </div>
 
-      <motion.svg
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5, duration: 0.8 }}
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-        className="w-full h-32 md:h-48"
-      >
-        {/* Grid lines */}
-        <line x1="0" y1="25" x2="100" y2="25" stroke="#1e1e2e" strokeWidth="0.3" />
-        <line x1="0" y1="50" x2="100" y2="50" stroke="#1e1e2e" strokeWidth="0.3" />
-        <line x1="0" y1="75" x2="100" y2="75" stroke="#1e1e2e" strokeWidth="0.3" />
-
-        {/* Year markers */}
-        {yearMarkers.map((m) => (
-          <line
-            key={m.x}
-            x1={m.x}
-            y1="0"
-            x2={m.x}
-            y2="100"
-            stroke="#1e1e2e"
-            strokeWidth="0.3"
-            strokeDasharray="2,2"
-          />
-        ))}
-
-        {/* Area fill */}
-        <motion.polygon
+      <div className="relative rounded-lg overflow-hidden" style={{ background: 'rgba(255,255,255,0.02)' }}>
+        <motion.svg
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.15 }}
-          transition={{ delay: 0.8, duration: 1 }}
-          points={areaPoints}
-          fill="url(#areaGradient)"
-        />
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          className="w-full h-36 md:h-44 block"
+        >
+          <line x1="0" y1="25" x2="100" y2="25" stroke="rgba(255,255,255,0.06)" strokeWidth="0.3" />
+          <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(255,255,255,0.06)" strokeWidth="0.3" />
+          <line x1="0" y1="75" x2="100" y2="75" stroke="rgba(255,255,255,0.06)" strokeWidth="0.3" />
 
-        {/* Line */}
-        <motion.polyline
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ delay: 0.5, duration: 2, ease: 'easeInOut' }}
-          points={polylinePoints}
-          fill="none"
-          stroke="url(#lineGradient)"
-          strokeWidth="0.8"
-          vectorEffect="non-scaling-stroke"
-        />
+          {yearMarkers.map((m) => (
+            <line key={m.x} x1={m.x} y1="0" x2={m.x} y2="100" stroke="rgba(255,255,255,0.05)" strokeWidth="0.3" strokeDasharray="2,2" />
+          ))}
 
-        {/* Gradients */}
-        <defs>
-          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#6bcb77" />
-            <stop offset="50%" stopColor="#ffd93d" />
-            <stop offset="100%" stopColor="#ff6b6b" />
-          </linearGradient>
-          <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#6c63ff" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#6c63ff" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-      </motion.svg>
+          <polygon points={areaPoints} fill="url(#areaGrad)" />
 
-      <div className="flex justify-between text-xs text-gray-600 mt-1">
-        <span>開始</span>
-        {yearMarkers.slice(0, 5).map((m) => (
-          <span key={m.x} style={{ position: 'relative', left: `${m.x - 50}%` }}>
-            {m.label}
-          </span>
-        ))}
-        <span>歸零</span>
+          <motion.polyline
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ delay: 0.3, duration: 1.5, ease: 'easeInOut' }}
+            points={polylinePoints}
+            fill="none"
+            stroke="url(#lineGrad)"
+            strokeWidth="1.5"
+            vectorEffect="non-scaling-stroke"
+            style={{ filter: 'drop-shadow(0 0 3px rgba(107, 203, 119, 0.4))' }}
+          />
+
+          {/* Midpoint marker */}
+          <circle cx={halfMonthX} cy={100 - (halfBalance / (maxBalance || 1)) * 100} r="1.2" fill="#ffd93d" opacity="0.8" />
+
+          <defs>
+            <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#4db8a4" />
+              <stop offset="40%" stopColor="#6bcb77" />
+              <stop offset="70%" stopColor="#ffd93d" />
+              <stop offset="100%" stopColor="#ff6b6b" />
+            </linearGradient>
+            <linearGradient id="areaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#4db8a4" stopOpacity="0.25" />
+              <stop offset="50%" stopColor="#6bcb77" stopOpacity="0.12" />
+              <stop offset="100%" stopColor="#ff6b6b" stopOpacity="0.03" />
+            </linearGradient>
+          </defs>
+        </motion.svg>
       </div>
+
+      <div className="flex justify-between text-[10px] text-muted-foreground mt-1.5">
+        <span className="text-primary/70">開始</span>
+        <div className="flex gap-3">
+          {yearMarkers.slice(0, 6).map((m) => (
+            <span key={m.x}>{m.label}</span>
+          ))}
+        </div>
+        <span className="text-destructive/70">歸零</span>
+      </div>
+
+      {/* Midpoint annotation */}
+      <p className="text-[10px] text-muted-foreground text-center mt-1">
+        半程時剩 <span className="text-foreground/70 font-medium">{halfBalanceLabel}</span>
+      </p>
     </div>
   )
 }

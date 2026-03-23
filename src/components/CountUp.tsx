@@ -35,9 +35,5 @@ export default function CountUp({
     return unsubscribe
   }, [display])
 
-  return (
-    <motion.span className={className}>
-      {displayValue}
-    </motion.span>
-  )
+  return <motion.span className={className}>{displayValue}</motion.span>
 }
