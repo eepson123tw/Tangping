@@ -1,73 +1,51 @@
-# React + TypeScript + Vite
+# 躺平模擬器 🛋️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+輸入你的存款與薪資，看看你能躺平多久。
 
-Currently, two official plugins are available:
+基於台灣官方經濟數據（主計總處、衛福部、勞動部、央行），考量通膨、租金、社保與生活成本，精準計算你的躺平天數。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 功能
 
-## React Compiler
+- **躺平計算** — 逐月模擬存款消耗，考量 CPI 通膨、定存利息、社保費用
+- **躺平人格** — 根據結果分配 12 種人格（泡麵戰士、躺平之神、回巢青年...）
+- **躺平大事記** — 四階段隨機生活事件時間軸（蜜月期 → 現實期 → 適應期 → 結局）
+- **分享卡片** — 可儲存 / 分享的結果圖片
+- **城市比較** — 台北、新北、桃園、台中、高雄、台南、其他縣市
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 技術棧
 
-## Expanding the ESLint configuration
+- React + TypeScript + Vite
+- Tailwind CSS v4
+- Framer Motion
+- React Three Fiber（3D 場景）
+- Vitest（單元測試）+ Playwright（E2E 測試）
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 開發
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 測試
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm test        # 單元測試（vitest）
+pnpm test:e2e    # E2E 測試（playwright）
 ```
+
+## 數據來源
+
+所有經濟數據皆可追溯至台灣政府官方來源，詳見 [`data/sources.md`](data/sources.md)。
+
+| 參數 | 值 | 來源 |
+|------|------|------|
+| 通膨率 | 1.7% | 主計總處 114 年 CPI |
+| 租金通膨率 | 2.0% | 主計總處房租類 CPI |
+| 定存利率 | 1.7% | 台灣銀行牌告 |
+| 無工作社保月費 | 2,155 元 | 健保署 + 勞保局 |
+| 薪資中位數 | 37,274 元/月 | 主計總處 113 年統計 |
+
+## License
+
+MIT
