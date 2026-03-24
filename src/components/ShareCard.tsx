@@ -10,7 +10,6 @@ interface Props {
   personality: TangpingPersonality
   percentile: number
   cityName: string
-  ending: string
   onClose: () => void
 }
 
@@ -19,7 +18,6 @@ export default function ShareCard({
   personality,
   percentile,
   cityName,
-  ending,
   onClose,
 }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
@@ -99,16 +97,17 @@ export default function ShareCard({
           className="flex flex-col items-center gap-4"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* The actual card to be captured */}
+          {/* The actual card to be captured — 360×640 for better social sharing */}
           <div
             ref={cardRef}
             data-share-card
             style={{
-              width: 270,
-              height: 480,
-              borderRadius: 16,
+              width: 360,
+              height: 640,
+              borderRadius: 20,
               overflow: 'hidden',
               background: 'linear-gradient(160deg, #0a1a1f 0%, #0d2428 30%, #111820 60%, #0a1215 100%)',
+              border: `1px solid ${personality.gradient[0]}30`,
             }}
           >
             <div
@@ -118,13 +117,13 @@ export default function ShareCard({
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '32px 20px',
+                padding: '36px 28px',
                 boxSizing: 'border-box',
               }}
             >
               {/* Top */}
               <div style={{ textAlign: 'center' }}>
-                <p style={{ fontSize: 10, color: '#8a9a9e', letterSpacing: 2, margin: 0 }}>
+                <p style={{ fontSize: 12, color: '#8a9a9e', letterSpacing: 3, margin: 0 }}>
                   躺 平 模 擬 器
                 </p>
               </div>
@@ -132,13 +131,13 @@ export default function ShareCard({
               {/* Middle — personality + numbers */}
               <div style={{ textAlign: 'center', width: '100%' }}>
                 {/* Emoji */}
-                <div style={{ fontSize: 48 }}>{personality.emoji}</div>
+                <div style={{ fontSize: 56 }}>{personality.emoji}</div>
 
                 {/* Personality name */}
                 <div style={{ marginTop: 16 }}>
                   <p
                     style={{
-                      fontSize: 22,
+                      fontSize: 28,
                       fontWeight: 800,
                       color: personality.color,
                       lineHeight: 1.2,
@@ -147,7 +146,7 @@ export default function ShareCard({
                   >
                     {personality.name}
                   </p>
-                  <p style={{ fontSize: 11, color: '#7a8a8e', marginTop: 4, marginBottom: 0 }}>
+                  <p style={{ fontSize: 13, color: '#8a9a9e', marginTop: 6, marginBottom: 0 }}>
                     {personality.title}
                   </p>
                 </div>
@@ -155,19 +154,19 @@ export default function ShareCard({
                 {/* Duration */}
                 <div
                   style={{
-                    background: 'rgba(255,255,255,0.04)',
-                    borderRadius: 12,
-                    padding: '12px 16px',
-                    marginTop: 16,
+                    background: 'rgba(255,255,255,0.06)',
+                    borderRadius: 14,
+                    padding: '14px 20px',
+                    marginTop: 20,
                   }}
                 >
-                  <p style={{ fontSize: 10, color: '#7a8a8e', marginBottom: 4, marginTop: 0 }}>
+                  <p style={{ fontSize: 12, color: '#8a9a9e', marginBottom: 6, marginTop: 0 }}>
                     在{cityName}可以躺
                   </p>
                   <p
                     data-gradient-text
                     style={{
-                      fontSize: 36,
+                      fontSize: 44,
                       fontWeight: 900,
                       background: `linear-gradient(90deg, ${personality.gradient[0]}, ${personality.gradient[1]})`,
                       WebkitBackgroundClip: 'text',
@@ -178,13 +177,13 @@ export default function ShareCard({
                   >
                     {years > 0 ? `${years}年` : ''}{months}個月
                   </p>
-                  <p style={{ fontSize: 10, color: '#6a7a7e', marginTop: 2, marginBottom: 0 }}>
+                  <p style={{ fontSize: 12, color: '#7a8a8e', marginTop: 4, marginBottom: 0 }}>
                     約 {result.totalDays.toLocaleString('zh-TW')} 天
                   </p>
                 </div>
 
                 {/* Percentile */}
-                <div style={{ padding: '0 8px', marginTop: 16 }}>
+                <div style={{ padding: '0 12px', marginTop: 20 }}>
                   <div
                     style={{
                       height: 6,
@@ -202,20 +201,20 @@ export default function ShareCard({
                       }}
                     />
                   </div>
-                  <p style={{ fontSize: 10, color: '#7a8a8e', marginTop: 4, marginBottom: 0 }}>
-                    勝過 {percentile}% 的人
+                  <p style={{ fontSize: 12, color: '#8a9a9e', marginTop: 6, marginBottom: 0 }}>
+                    勝過 <strong style={{ color: personality.color }}>{percentile}%</strong> 的人
                   </p>
                 </div>
 
                 {/* Oneliner */}
                 <p
                   style={{
-                    fontSize: 12,
-                    color: '#a0b0b4',
+                    fontSize: 14,
+                    color: '#a8b8bc',
                     fontStyle: 'italic',
                     lineHeight: 1.5,
-                    padding: '0 4px',
-                    marginTop: 16,
+                    padding: '0 8px',
+                    marginTop: 20,
                     marginBottom: 0,
                   }}
                 >
@@ -223,28 +222,20 @@ export default function ShareCard({
                 </p>
               </div>
 
-              {/* Bottom — ending + branding */}
+              {/* Bottom — CTA + branding */}
               <div style={{ textAlign: 'center', width: '100%' }}>
-                <p
-                  style={{
-                    fontSize: 10,
-                    color: '#6a7a7e',
-                    lineHeight: 1.6,
-                    padding: '0 4px',
-                    margin: 0,
-                  }}
-                >
-                  {ending}
+                <p style={{ fontSize: 13, color: '#8a9a9e', margin: 0 }}>
+                  你也來躺平 →
                 </p>
                 <div
                   style={{
                     width: 40,
                     height: 1,
                     background: 'rgba(255,255,255,0.1)',
-                    margin: '12px auto',
+                    margin: '10px auto',
                   }}
                 />
-                <p style={{ fontSize: 9, color: '#4a5a5e', letterSpacing: 1, margin: 0 }}>
+                <p style={{ fontSize: 12, color: '#5a6a6e', letterSpacing: 1, margin: 0 }}>
                   tangping.app
                 </p>
               </div>
@@ -252,7 +243,7 @@ export default function ShareCard({
           </div>
 
           {/* Actions below card */}
-          <div style={{ display: 'flex', gap: 12, width: 270 }}>
+          <div style={{ display: 'flex', gap: 12, width: 360 }}>
             <Button variant="outline" className="flex-1" onClick={onClose}>
               關閉
             </Button>

@@ -93,15 +93,15 @@ export default function ResultView({ result, city, onReset }: Props) {
       transition={{ duration: 0.4 }}
       className="min-h-screen"
     >
-      {/* Ambient glow — personality-colored */}
+      {/* Ambient glow — personality-colored, stronger presence */}
       <div className="fixed inset-0 -z-20 overflow-hidden">
         <div
           className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full blur-[120px]"
-          style={{ backgroundColor: `${personality.gradient[0]}12` }}
+          style={{ backgroundColor: `${personality.gradient[0]}20` }}
         />
         <div
           className="absolute bottom-[10%] right-[-10%] w-[40%] h-[40%] rounded-full blur-[100px]"
-          style={{ backgroundColor: `${personality.gradient[1]}10` }}
+          style={{ backgroundColor: `${personality.gradient[1]}18` }}
         />
       </div>
 
@@ -114,7 +114,7 @@ export default function ResultView({ result, city, onReset }: Props) {
       </div>
 
       {/* Content */}
-      <div className="px-4 pb-12 -mt-4 relative z-10 max-w-md mx-auto space-y-5">
+      <div className="px-4 pb-12 -mt-4 relative z-10 max-w-md mx-auto space-y-6">
 
         {/* Personality badge + hero */}
         <motion.div
@@ -158,7 +158,7 @@ export default function ResultView({ result, city, onReset }: Props) {
               <>
                 <CountUp
                   value={result.totalDays}
-                  className="text-7xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
+                  className="text-6xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
                   duration={1.5}
                 />
                 <span className="text-lg text-muted-foreground font-medium">天</span>
@@ -169,7 +169,7 @@ export default function ResultView({ result, city, onReset }: Props) {
                   <>
                     <CountUp
                       value={years}
-                      className="text-7xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
+                      className="text-6xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
                       duration={1.5}
                     />
                     <span className="text-lg text-muted-foreground font-medium">年</span>
@@ -177,7 +177,7 @@ export default function ResultView({ result, city, onReset }: Props) {
                 )}
                 <CountUp
                   value={months}
-                  className="text-7xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
+                  className="text-6xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
                   duration={1.5}
                 />
                 <span className="text-lg text-muted-foreground font-medium">個月</span>
@@ -236,13 +236,11 @@ export default function ResultView({ result, city, onReset }: Props) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45 }}
           className="glass-card rounded-xl py-3 px-4 text-center"
-          style={{
-            borderColor: 'rgba(255, 217, 61, 0.15)',
-            background: 'linear-gradient(135deg, rgba(255, 217, 61, 0.04), rgba(240, 147, 43, 0.04))',
-          }}
         >
           <p className="text-xs text-muted-foreground">
             🧋 相當於喝 <span className="text-accent font-bold">{bobaCount.toLocaleString('zh-TW')}</span> 杯手搖飲的人生
+            <span className="mx-2 opacity-30">·</span>
+            通膨年蝕 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元，利息只多撐 {Math.round(result.totalInterestEarned / result.monthlyExpense)} 個月
           </p>
         </motion.div>
 
@@ -252,15 +250,11 @@ export default function ResultView({ result, city, onReset }: Props) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           className="glass-card rounded-xl py-4 px-4"
-          style={{
-            borderColor: 'rgba(77, 184, 164, 0.12)',
-            background: 'linear-gradient(160deg, rgba(77, 184, 164, 0.04), rgba(107, 203, 119, 0.02))',
-          }}
         >
           <BalanceChart timeline={result.timeline} />
         </motion.div>
 
-        {/* Stats grid */}
+        {/* Stats grid — essential 2 */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -268,28 +262,25 @@ export default function ResultView({ result, city, onReset }: Props) {
           className="grid grid-cols-2 gap-3"
         >
           <StatCard label="總花費" value={result.totalSpent} prefix="NT$ " color="#ff6b6b" icon="💸" />
-          <StatCard label="利息收入" value={result.totalInterestEarned} prefix="NT$ " color="#6bcb77" icon="🏦" />
-          <StatCard label="每月生活費" value={result.monthlyExpense} prefix="NT$ " color="#ffd93d" icon="🧾" />
-          <StatCard label="每月社保" value={SOCIAL_INSURANCE_MONTHLY} prefix="NT$ " color="#54a0ff" icon="🏥" />
+          <StatCard label="利息收入" value={result.totalInterestEarned} prefix="NT$ " color="#4db8a4" icon="🏦" />
         </motion.div>
 
-        {/* Life events timeline */}
-        {lifeEvents.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="glass-card rounded-xl py-4 px-4"
-          >
-            <EventTimeline events={lifeEvents} totalMonths={result.totalMonths} />
-          </motion.div>
-        )}
+        {/* Detail stats — collapsible */}
+        <details className="text-xs text-muted-foreground">
+          <summary className="cursor-pointer hover:text-foreground/60 transition-colors text-center">
+            計算詳情
+          </summary>
+          <div className="grid grid-cols-2 gap-3 mt-3">
+            <StatCard label="每月生活費" value={result.monthlyExpense} prefix="NT$ " color="#e8b84a" icon="🧾" />
+            <StatCard label="每月社保" value={SOCIAL_INSURANCE_MONTHLY} prefix="NT$ " color="#4db8a4" icon="🏥" />
+          </div>
+        </details>
 
-        {/* Ending */}
+        {/* Ending — moved before timeline for emotional impact */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
+          transition={{ delay: 0.7 }}
           className="glass-card rounded-xl py-4 px-5 text-center"
           style={{
             borderColor: `${personality.color}33`,
@@ -300,20 +291,17 @@ export default function ResultView({ result, city, onReset }: Props) {
           <p className="text-sm font-medium leading-relaxed">{ending}</p>
         </motion.div>
 
-        {/* Insight */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9 }}
-          className="text-center text-xs text-muted-foreground space-y-0.5"
-        >
-          <p>
-            通膨每年吃掉你 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元的購買力
-          </p>
-          <p>
-            定存利息只幫你多撐了 {Math.round(result.totalInterestEarned / result.monthlyExpense)} 個月
-          </p>
-        </motion.div>
+        {/* Life events timeline — collapsible to reduce scroll */}
+        {lifeEvents.length > 0 && (
+          <details className="glass-card rounded-xl py-4 px-4">
+            <summary className="cursor-pointer text-xs font-medium text-foreground/80 text-center hover:text-foreground/60 transition-colors">
+              躺平大事記（{lifeEvents.length} 件事）
+            </summary>
+            <div className="mt-3">
+              <EventTimeline events={lifeEvents} totalMonths={result.totalMonths} />
+            </div>
+          </details>
+        )}
 
         {/* Source — collapsed */}
         <motion.details
@@ -335,21 +323,23 @@ export default function ResultView({ result, city, onReset }: Props) {
           </div>
         </motion.details>
 
-        {/* Actions */}
-        <div className="flex gap-3 pt-2">
-          <Button variant="outline" className="flex-1 h-11" onClick={onReset}>
-            重新計算
-          </Button>
-          <Button
-            variant="outline"
-            className="flex-1 h-11"
-            onClick={handleCopyText}
-          >
-            {copied ? '已複製！' : '複製文字'}
-          </Button>
-          <Button className="flex-1 h-11" onClick={() => setShowShareCard(true)}>
+        {/* Actions — share primary, others secondary */}
+        <div className="space-y-3 pt-2">
+          <Button className="w-full h-12 text-base font-bold" onClick={() => setShowShareCard(true)}>
             分享卡片
           </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              className="flex-1 h-11"
+              onClick={handleCopyText}
+            >
+              {copied ? '已複製！' : '複製文字'}
+            </Button>
+            <Button variant="outline" className="flex-1 h-11" onClick={onReset}>
+              重新計算
+            </Button>
+          </div>
         </div>
 
         {/* Share card modal */}
@@ -359,7 +349,6 @@ export default function ResultView({ result, city, onReset }: Props) {
             personality={personality}
             percentile={percentile}
             cityName={city.name}
-            ending={ending}
             onClose={() => setShowShareCard(false)}
           />
         )}
@@ -382,21 +371,13 @@ function StatCard({
   icon: string
 }) {
   return (
-    <div
-      className="glass-card rounded-xl py-3 px-4 relative overflow-hidden"
-      style={{ borderColor: `${color}22` }}
-    >
+    <div className="glass-card rounded-xl py-3 px-4">
       <div className="flex items-center gap-1.5 mb-1">
         <span className="text-xs">{icon}</span>
         <p className="text-xs text-muted-foreground">{label}</p>
       </div>
       <CountUp value={value} prefix={prefix} className="text-sm font-bold truncate block" duration={2} />
       <div className="mt-1.5 h-0.5 rounded-full" style={{ backgroundColor: color, opacity: 0.5 }} />
-      {/* Subtle corner glow */}
-      <div
-        className="absolute -top-4 -right-4 w-12 h-12 rounded-full blur-xl"
-        style={{ backgroundColor: color, opacity: 0.06 }}
-      />
     </div>
   )
 }

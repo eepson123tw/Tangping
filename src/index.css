@@ -118,7 +118,7 @@ body {
 
 /* 毛玻璃卡片 — 低階裝置降級 */
 .glass-card {
-  background: oklch(0.16 0.015 240 / 50%);
+  background: oklch(0.16 0.015 240 / 65%);
   border: 1px solid oklch(0.3 0.015 240 / 30%);
 }
 @supports (backdrop-filter: blur(12px)) {

@@ -68,8 +68,8 @@ export default function InputForm({ onResult }: Props) {
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-accent/6 blur-[100px]" />
       </div>
 
-      {/* 3D Background — lazy loaded */}
-      <div className="fixed inset-0 -z-10 opacity-50 pointer-events-none">
+      {/* 3D Background — lazy loaded, subtle on mobile */}
+      <div className="fixed inset-0 -z-10 opacity-30 md:opacity-50 pointer-events-none">
         <Suspense fallback={null}>
           <Scene3D mode="idle" />
         </Suspense>
@@ -80,12 +80,12 @@ export default function InputForm({ onResult }: Props) {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.1, duration: 0.5 }}
-        className="text-center mb-8"
+        className="text-center mb-4 md:mb-8"
       >
-        <h1 className="text-5xl md:text-7xl font-black mb-3 bg-linear-to-r from-primary via-accent to-chart-4 bg-clip-text text-transparent">
+        <h1 className="text-3xl md:text-7xl font-black mb-2 bg-linear-to-r from-primary via-accent to-chart-4 bg-clip-text text-transparent">
           躺平模擬器
         </h1>
-        <p className="text-muted-foreground text-lg">
+        <p className="text-muted-foreground text-base md:text-lg">
           輸入你的存款，看看你能躺多久
         </p>
       </motion.div>
