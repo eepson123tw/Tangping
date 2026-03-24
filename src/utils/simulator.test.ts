@@ -35,7 +35,7 @@ describe('simulate', () => {
     })
     expect(result.totalDays).toBeGreaterThan(0)
     expect(result.totalDays).toBeLessThan(30)
-    expect(result.totalMonths).toBe(1) // loop still runs 1 iteration
+    expect(result.totalMonths).toBe(0) // didn't survive a full month
   })
 
   it('1M savings in Taipei lasts about 3-6 years', () => {

@@ -117,7 +117,7 @@ export function simulate(input: SimulationInput): SimulationResult {
     }
   }
 
-  const totalMonths = month
+  const totalMonths = Math.floor(fractionalMonths)
   const totalDays = Math.max(0, Math.round(fractionalMonths * 30.44))
   const totalYears = fractionalMonths / 12
 
