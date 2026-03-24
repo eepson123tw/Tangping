@@ -115,6 +115,11 @@ export function simulate(input: SimulationInput): SimulationResult {
       const fraction = prevBalance / lastExpenseNet
       fractionalMonths = month - 1 + Math.min(fraction, 1)
     }
+
+    // 按比例修正最後一個月的花費與利息（只花了一部分）
+    const fractionOfLastMonth = fractionalMonths - (month - 1)
+    totalSpent -= lastSnapshot.expense * (1 - fractionOfLastMonth)
+    totalInterestEarned -= lastSnapshot.interest * (1 - fractionOfLastMonth)
   }
 
   const totalMonths = Math.floor(fractionalMonths)

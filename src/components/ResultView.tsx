@@ -230,40 +230,45 @@ export default function ResultView({ result, city, onReset }: Props) {
           </div>
         </motion.div>
 
-        {/* Fun fact */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45 }}
-          className="glass-card rounded-xl py-3 px-4 text-center"
-        >
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            🧋 相當於喝 <span className="text-accent font-bold">{bobaCount.toLocaleString('zh-TW')}</span> 杯手搖飲的人生
-            <br />
-            📉 通膨年蝕 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元，利息只多撐 {Math.round(result.totalInterestEarned / result.monthlyExpense)} 個月
-          </p>
-        </motion.div>
+        {/* 以下區塊僅在有實際躺平天數時才顯示 */}
+        {result.totalDays > 0 && (
+          <>
+            {/* Fun fact */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45 }}
+              className="glass-card rounded-xl py-3 px-4 text-center"
+            >
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                🧋 相當於喝 <span className="text-accent font-bold">{bobaCount.toLocaleString('zh-TW')}</span> 杯手搖飲的人生
+                <br />
+                📉 通膨年蝕 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元，利息只多撐 {Math.round(result.totalInterestEarned / result.monthlyExpense)} 個月
+              </p>
+            </motion.div>
 
-        {/* Balance chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="glass-card rounded-xl py-4 px-4"
-        >
-          <BalanceChart timeline={result.timeline} />
-        </motion.div>
+            {/* Balance chart */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="glass-card rounded-xl py-4 px-4"
+            >
+              <BalanceChart timeline={result.timeline} />
+            </motion.div>
 
-        {/* Stats grid — essential 2 */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="grid grid-cols-2 gap-3"
-        >
-          <StatCard label="總花費" value={result.totalSpent} prefix="NT$ " color="#ff6b6b" icon="💸" />
-          <StatCard label="利息收入" value={result.totalInterestEarned} prefix="NT$ " color="#4db8a4" icon="🏦" />
-        </motion.div>
+            {/* Stats grid — essential 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="grid grid-cols-2 gap-3"
+            >
+              <StatCard label="總花費" value={result.totalSpent} prefix="NT$ " color="#ff6b6b" icon="💸" />
+              <StatCard label="利息收入" value={result.totalInterestEarned} prefix="NT$ " color="#4db8a4" icon="🏦" />
+            </motion.div>
+          </>
+        )}
 
         {/* Detail stats — collapsible */}
         <details className="text-xs text-muted-foreground">
@@ -308,7 +313,6 @@ export default function ResultView({ result, city, onReset }: Props) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          open
           className="text-xs text-muted-foreground"
         >
           <summary className="cursor-pointer hover:text-foreground/60 transition-colors text-center">
