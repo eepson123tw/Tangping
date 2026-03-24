@@ -76,12 +76,13 @@ export default function ResultView({ result, city, onReset }: Props) {
 
   const [copied, setCopied] = useState(false)
 
-  // Build share URL with params so recipients see the same result
+  // Build share URL with encoded params (不直接暴露存款金額)
   const shareUrl = useMemo(() => {
     const cityIdx = CITIES.findIndex(c => c.name === city.name)
-    const params = new URLSearchParams({ s: String(result.initialSavings) })
-    if (cityIdx > 0) params.set('c', String(cityIdx))
-    return `https://tangping.zeabur.app/?${params}`
+    const data: Record<string, number> = { s: result.initialSavings }
+    if (cityIdx > 0) data.c = cityIdx
+    const encoded = btoa(JSON.stringify(data))
+    return `https://tangping.zeabur.app/?d=${encoded}`
   }, [result, city])
 
   const handleCopyText = async () => {

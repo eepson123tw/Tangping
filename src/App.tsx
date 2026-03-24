@@ -39,24 +39,27 @@ function App() {
   const [result, setResult] = useState<SimulationResult | null>(null)
   const [city, setCity] = useState<CityData | null>(null)
 
-  // Auto-calculate from URL params (e.g., ?s=87&m=0&c=0)
+  // Auto-calculate from encoded URL param (?d=base64)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    const s = params.get('s')
-    if (!s) return
-    const savings = parseInt(s, 10)
-    if (!savings || savings <= 0) return
-    const salary = parseInt(params.get('m') || '0', 10) || MEDIAN_SALARY
-    const cityIdx = Math.min(parseInt(params.get('c') || '0', 10) || 0, CITIES.length - 1)
-    const expense = parseInt(params.get('e') || '0', 10) || undefined
-    const c = CITIES[cityIdx]
-    const r = simulate({
-      savings, monthlySalaryBeforeQuit: salary, city: c,
-      monthlyExpenseOverride: expense,
-    })
-    setResult(r)
-    setCity(c)
-    setState('result')
+    const encoded = params.get('d')
+    if (!encoded) return
+    try {
+      const data = JSON.parse(atob(encoded))
+      const savings = data.s
+      if (!savings || savings <= 0) return
+      const salary = data.m || MEDIAN_SALARY
+      const cityIdx = Math.min(data.c || 0, CITIES.length - 1)
+      const expense = data.e || undefined
+      const c = CITIES[cityIdx]
+      const r = simulate({
+        savings, monthlySalaryBeforeQuit: salary, city: c,
+        monthlyExpenseOverride: expense,
+      })
+      setResult(r)
+      setCity(c)
+      setState('result')
+    } catch { /* invalid param, ignore */ }
     // Clean URL without reload
     window.history.replaceState({}, '', window.location.pathname)
   }, [])
