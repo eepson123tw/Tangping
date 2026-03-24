@@ -43,12 +43,13 @@ export default function ShareCard({
           const el = doc.querySelector('[data-share-card]') as HTMLElement
           if (el) el.style.background = 'linear-gradient(160deg, #0a1a1f 0%, #0d2428 30%, #111820 60%, #0a1215 100%)'
           // Fix gradient text — html2canvas can't render background-clip:text
+          // Use personality's primary gradient color instead of hardcoded teal
           const gradientText = doc.querySelector('[data-gradient-text]') as HTMLElement
           if (gradientText) {
             gradientText.style.background = 'none'
             gradientText.style.webkitBackgroundClip = 'unset'
-            gradientText.style.webkitTextFillColor = '#4db8a4'
-            gradientText.style.color = '#4db8a4'
+            gradientText.style.webkitTextFillColor = personality.gradient[0]
+            gradientText.style.color = personality.gradient[0]
           }
         },
       })
@@ -168,7 +169,7 @@ export default function ShareCard({
                     style={{
                       fontSize: 36,
                       fontWeight: 900,
-                      background: 'linear-gradient(90deg, #4db8a4, #e8b84a)',
+                      background: `linear-gradient(90deg, ${personality.gradient[0]}, ${personality.gradient[1]})`,
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       lineHeight: 1.1,

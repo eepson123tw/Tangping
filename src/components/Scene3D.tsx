@@ -147,13 +147,14 @@ export default function Scene3D({ mode, progress = 0 }: Props) {
       <Canvas
         camera={{ position: [0, 1, 5], fov: 50 }}
         style={{ pointerEvents: 'none' }}
+        dpr={[1, 2]}
       >
         <ambientLight intensity={0.7} />
         <directionalLight position={[5, 5, 5]} intensity={1.2} />
         <pointLight position={[-3, 2, 2]} intensity={0.6} color="#4db8a4" />
         <pointLight position={[3, -1, 3]} intensity={0.4} color="#e8b84a" />
 
-        <Stars radius={40} depth={40} count={2000} factor={5} fade speed={0.8} />
+        <Stars radius={40} depth={40} count={1000} factor={5} fade speed={0.8} />
 
         {mode === 'idle' && <IdleScene />}
         {mode === 'tangping' && <TangpingScene progress={progress} />}

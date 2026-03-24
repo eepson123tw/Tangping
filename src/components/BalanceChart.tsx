@@ -9,8 +9,10 @@ interface Props {
 
 export default function BalanceChart({ timeline, className = '' }: Props) {
   const { points, maxBalance, totalMonths } = useMemo(() => {
-    const max = Math.max(...timeline.map((s) => s.balance))
-    const total = timeline.length - 1
+    if (timeline.length === 0) return { points: [], maxBalance: 0, totalMonths: 0 }
+
+    const max = Math.max(...timeline.map((s) => s.balance)) || 1
+    const total = Math.max(1, timeline.length - 1)
 
     const step = Math.max(1, Math.floor(total / 80))
     const sampled = timeline.filter((_, i) => i % step === 0 || i === total)
@@ -23,6 +25,8 @@ export default function BalanceChart({ timeline, className = '' }: Props) {
 
     return { points: pts, maxBalance: max, totalMonths: total }
   }, [timeline])
+
+  if (points.length === 0) return null
 
   const polylinePoints = points.join(' ')
   const areaPoints = `0,100 ${polylinePoints} 100,100`

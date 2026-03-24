@@ -92,22 +92,47 @@ html {
   scroll-behavior: smooth;
 }
 
+/* 尊重系統減少動態設定 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 body {
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  /* Safe area padding for notch/Dynamic Island */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
   /* 微噪點紋理 — 避免純黑的虛空感 */
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
 }
 
-/* 毛玻璃卡片 */
+/* 毛玻璃卡片 — 低階裝置降級 */
 .glass-card {
   background: oklch(0.16 0.015 240 / 50%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid oklch(0.3 0.015 240 / 30%);
 }
+@supports (backdrop-filter: blur(12px)) {
+  .glass-card {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
 
+/* Scrollbar — Webkit + Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.25 0.015 240) oklch(0.11 0.015 240);
+}
 ::-webkit-scrollbar {
   width: 6px;
 }

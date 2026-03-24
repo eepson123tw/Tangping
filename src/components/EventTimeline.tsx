@@ -75,7 +75,7 @@ export default function EventTimeline({ events }: Props) {
                 }}
               />
 
-              <p className="text-[10px] text-muted-foreground leading-none mb-0.5">
+              <p className="text-[11px] text-muted-foreground leading-none mb-0.5">
                 {monthLabel}
               </p>
               <p className="text-sm leading-snug">{event.text}</p>

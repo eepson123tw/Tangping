@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { CITIES, MEDIAN_SALARY, type CityData } from '@/data/constants'
 import { simulate, type SimulationResult } from '@/utils/simulator'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import Scene3D from './Scene3D'
+
+const Scene3D = lazy(() => import('./Scene3D'))
 
 interface Props {
   onResult: (result: SimulationResult, city: CityData) => void
@@ -67,9 +68,11 @@ export default function InputForm({ onResult }: Props) {
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-accent/6 blur-[100px]" />
       </div>
 
-      {/* 3D Background */}
+      {/* 3D Background — lazy loaded */}
       <div className="fixed inset-0 -z-10 opacity-50 pointer-events-none">
-        <Scene3D mode="idle" />
+        <Suspense fallback={null}>
+          <Scene3D mode="idle" />
+        </Suspense>
       </div>
 
       {/* Header */}
@@ -129,14 +132,15 @@ export default function InputForm({ onResult }: Props) {
           {/* 城市選擇 */}
           <div className="space-y-2">
             <Label>躺平地點</Label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2" role="group" aria-label="選擇躺平城市">
               {CITIES.map((city, i) => (
                 <Button
                   key={city.name}
                   type="button"
                   variant={i === cityIndex ? 'default' : 'outline'}
                   onClick={() => setCityIndex(i)}
-                  className="text-xs h-9 px-4"
+                  aria-pressed={i === cityIndex}
+                  className="text-xs h-10 px-4"
                 >
                   {city.name}
                 </Button>
@@ -153,6 +157,8 @@ export default function InputForm({ onResult }: Props) {
             <button
               type="button"
               onClick={() => setShowAdvanced(!showAdvanced)}
+              aria-expanded={showAdvanced}
+              aria-controls="advanced-settings"
               className="text-xs text-muted-foreground hover:text-foreground transition-colors py-1"
             >
               {showAdvanced ? '▴ 收起' : '▾ 展開'}進階設定
@@ -160,6 +166,7 @@ export default function InputForm({ onResult }: Props) {
 
             {showAdvanced && (
               <motion.div
+                id="advanced-settings"
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 className="mt-3 space-y-2"
@@ -184,7 +191,7 @@ export default function InputForm({ onResult }: Props) {
 
           {/* 錯誤提示 */}
           {error && (
-            <p className="text-destructive text-sm text-center">{error}</p>
+            <p role="alert" className="text-destructive text-sm text-center">{error}</p>
           )}
 
           {/* 提交 */}

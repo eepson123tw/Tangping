@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import type { SimulationResult } from '@/utils/simulator'
 import type { CityData } from '@/data/constants'
@@ -11,7 +11,8 @@ import CountUp from './CountUp'
 import BalanceChart from './BalanceChart'
 import EventTimeline from './EventTimeline'
 import ShareCard from './ShareCard'
-import Scene3D from './Scene3D'
+
+const Scene3D = lazy(() => import('./Scene3D'))
 
 interface Props {
   result: SimulationResult
@@ -106,7 +107,9 @@ export default function ResultView({ result, city, onReset }: Props) {
 
       {/* 3D Scene — compact */}
       <div className="h-[20vh] relative">
-        <Scene3D mode="tangping" progress={sceneProgress} />
+        <Suspense fallback={null}>
+          <Scene3D mode="tangping" progress={sceneProgress} />
+        </Suspense>
         <div className="absolute inset-0 bg-linear-to-b from-transparent to-background pointer-events-none" />
       </div>
 
@@ -334,17 +337,17 @@ export default function ResultView({ result, city, onReset }: Props) {
 
         {/* Actions */}
         <div className="flex gap-3 pt-2">
-          <Button variant="outline" className="flex-1" onClick={onReset}>
+          <Button variant="outline" className="flex-1 h-11" onClick={onReset}>
             重新計算
           </Button>
           <Button
             variant="outline"
-            className="flex-1"
+            className="flex-1 h-11"
             onClick={handleCopyText}
           >
             {copied ? '已複製！' : '複製文字'}
           </Button>
-          <Button className="flex-1" onClick={() => setShowShareCard(true)}>
+          <Button className="flex-1 h-11" onClick={() => setShowShareCard(true)}>
             分享卡片
           </Button>
         </div>
@@ -387,7 +390,7 @@ function StatCard({
         <span className="text-xs">{icon}</span>
         <p className="text-xs text-muted-foreground">{label}</p>
       </div>
-      <CountUp value={value} prefix={prefix} className="text-sm font-bold" duration={2} />
+      <CountUp value={value} prefix={prefix} className="text-sm font-bold truncate block" duration={2} />
       <div className="mt-1.5 h-0.5 rounded-full" style={{ backgroundColor: color, opacity: 0.5 }} />
       {/* Subtle corner glow */}
       <div
