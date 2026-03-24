@@ -78,12 +78,12 @@ export default function ShareCard({
     }
   }, [personality, onClose])
 
-  // Auto-trigger on mount — render one frame for html2canvas, then capture
+  // Auto-trigger on mount — wait for DOM paint + fonts before capture
   useEffect(() => {
-    const timer = requestAnimationFrame(() => {
+    const timer = setTimeout(() => {
       handleGenerate()
-    })
-    return () => cancelAnimationFrame(timer)
+    }, 300)
+    return () => clearTimeout(timer)
   }, [handleGenerate])
 
   return (
@@ -127,8 +127,8 @@ export default function ShareCard({
         </div>
       </motion.div>
 
-      {/* Card rendered off-screen for html2canvas capture */}
-      <div style={{ position: 'fixed', left: '-9999px', top: 0 }}>
+      {/* Card rendered invisibly for html2canvas capture (must be in viewport for rendering) */}
+      <div style={{ position: 'fixed', left: 0, top: 0, opacity: 0, pointerEvents: 'none', zIndex: -1 }}>
         <div
           ref={cardRef}
           data-share-card
