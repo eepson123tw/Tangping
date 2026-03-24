@@ -138,54 +138,58 @@ const PERSONALITIES: TangpingPersonality[] = [
   },
 ]
 
+const PERSONALITY_MAP = new Map(PERSONALITIES.map(p => [p.id, p]))
+const find = (id: string) => PERSONALITY_MAP.get(id)!
+
 /**
  * 根據模擬結果分配躺平人格
+ * minLivingCost: 該城市官方最低生活費，用來做相對門檻判斷
  */
 export function getPersonality(params: {
   totalDays: number
   savings: number
   monthlyExpense: number
   cityName: string
+  minLivingCost: number
 }): TangpingPersonality {
-  const { totalDays, savings, monthlyExpense, cityName } = params
+  const { totalDays, savings, monthlyExpense, cityName, minLivingCost } = params
   const months = totalDays / 30.44
 
-  // 極端短 — 泡麵戰士
-  if (months < 2) return PERSONALITIES.find(p => p.id === 'instant-noodle')!
+  // === 極端情況 ===
+  // 極短 — 泡麵戰士
+  if (months < 2) return find('instant-noodle')
 
-  // 幾乎沒存款
-  if (savings < 50000) return PERSONALITIES.find(p => p.id === 'moonlight')!
+  // 存款不到 4 個月開銷 — 月光仙子
+  if (savings < monthlyExpense * 4) return find('moonlight')
 
-  // 住家裡（其他縣市 + 低開銷）
-  if (monthlyExpense < 12000) return PERSONALITIES.find(p => p.id === 'parents-home')!
+  // 十年以上 — 躺平之神（極端長一律封神）
+  if (months >= 120) return find('legend')
 
-  // 極簡（低於最低生活費 80%）
-  if (monthlyExpense < 14000 && months > 12) return PERSONALITIES.find(p => p.id === 'frugal-monk')!
+  // === 生活型態（非極端時，生活方式 > 持續時間）===
+  // 住家裡（開銷遠低於城市最低生活費）
+  if (monthlyExpense < minLivingCost * 0.7 && months < 60) return find('parents-home')
 
-  // 十年以上 — 躺平之神
-  if (months >= 120) return PERSONALITIES.find(p => p.id === 'legend')!
+  // 極簡修行（開銷低於城市最低生活費，且能撐一年以上）
+  if (monthlyExpense < minLivingCost * 0.9 && months > 12 && months < 60) return find('frugal-monk')
 
-  // 五年以上 — 躺平宗師
-  if (months >= 60) return PERSONALITIES.find(p => p.id === 'fire-master')!
+  // === 長期（5 年以上）===
+  if (months >= 60) return find('fire-master')
 
-  // 鄉下隱居（非六都 + 2年以上）
-  if (cityName === '其他縣市' && months >= 24) return PERSONALITIES.find(p => p.id === 'hermit')!
+  // === 中期 + 特殊條件 ===
+  // 鄉下隱居（非六都 + 2 年以上）
+  if (cityName === '其他縣市' && months >= 24) return find('hermit')
 
-  // 高開銷短期 — 及時行樂
-  if (monthlyExpense > 25000 && months < 24) return PERSONALITIES.find(p => p.id === 'yolo')!
+  // 被動收入幻想家（高存款但利息不夠活，1-5 年）
+  if (savings >= 1_000_000 && months >= 12) return find('investor')
 
-  // 2年以上但不到5年 — 居家躺平師
-  if (months >= 24) return PERSONALITIES.find(p => p.id === 'homebody')!
+  // 高開銷短期 — 及時行樂（花費高於城市最低 1.4 倍）
+  if (monthlyExpense > minLivingCost * 1.4 && months < 24) return find('yolo')
 
-  // 1-2年 — 咖啡廳數位遊牧
-  if (months >= 12) return PERSONALITIES.find(p => p.id === 'cafe-nomad')!
+  // === 純持續時間 ===
+  if (months >= 24) return find('homebody')
+  if (months >= 12) return find('cafe-nomad')
+  if (months >= 6) return find('gap-year')
 
-  // 半年到一年 — Gap Year
-  if (months >= 6) return PERSONALITIES.find(p => p.id === 'gap-year')!
-
-  // 利息明顯 — 被動收入幻想家
-  if (savings > 2000000) return PERSONALITIES.find(p => p.id === 'investor')!
-
-  // 預設
-  return PERSONALITIES.find(p => p.id === 'cafe-nomad')!
+  // 預設（2-6 個月，不算月光）
+  return find('gap-year')
 }

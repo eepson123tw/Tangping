@@ -2,23 +2,25 @@ import { useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { getPersonality } from '@/data/personality'
 import type { SimulationResult } from '@/utils/simulator'
+import type { CityData } from '@/data/constants'
 
 interface Props {
   result: SimulationResult
-  cityName: string
+  city: CityData
   onDone: () => void
 }
 
-export default function LoadingReveal({ result, cityName, onDone }: Props) {
+export default function LoadingReveal({ result, city, onDone }: Props) {
   const personality = useMemo(
     () =>
       getPersonality({
         totalDays: result.totalDays,
         savings: result.initialSavings,
         monthlyExpense: result.monthlyExpense,
-        cityName,
+        cityName: city.name,
+        minLivingCost: city.minLivingCost,
       }),
-    [result, cityName],
+    [result, city],
   )
 
   useEffect(() => {

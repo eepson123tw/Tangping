@@ -79,20 +79,36 @@ export interface TimelineEntry {
 
 export function generateTimeline(totalMonths: number): TimelineEntry[] {
   const events: TimelineEntry[] = []
+  const usedMonths = new Set<number>()
 
-  // 蜜月期（前 3 個月）
+  // 找到最近的未被佔用月份
+  const claimMonth = (preferred: number): number => {
+    const m = Math.max(0, Math.min(preferred, totalMonths - 1))
+    let candidate = m
+    while (usedMonths.has(candidate) && candidate < totalMonths - 1) candidate++
+    if (usedMonths.has(candidate)) {
+      candidate = m
+      while (usedMonths.has(candidate) && candidate > 0) candidate--
+    }
+    usedMonths.add(candidate)
+    return candidate
+  }
+
+  // 蜜月期（前 3 個月）— 使用事件定義的 month
   const honey = shufflePick(HONEYMOON_EVENTS, Math.min(3, totalMonths))
-  honey.forEach((e, i) => {
-    events.push({ month: Math.min(i, totalMonths - 1), text: e.text, phase: 'honeymoon' })
+    .sort((a, b) => a.month - b.month)
+  honey.forEach((e) => {
+    events.push({ month: claimMonth(e.month), text: e.text, phase: 'honeymoon' })
   })
 
   // 現實期（4-12 個月）
   if (totalMonths > 3) {
     const realityCount = totalMonths > 12 ? 3 : Math.min(2, totalMonths - 3)
     const reality = shufflePick(REALITY_EVENTS, realityCount)
-    reality.forEach((e, i) => {
-      const m = Math.min(4 + i * 2, totalMonths - 1)
-      events.push({ month: m, text: e.text, phase: 'reality' })
+      .sort((a, b) => a.month - b.month)
+    reality.forEach((e) => {
+      const m = Math.min(e.month, totalMonths - 1)
+      events.push({ month: claimMonth(m), text: e.text, phase: 'reality' })
     })
   }
 
@@ -100,17 +116,23 @@ export function generateTimeline(totalMonths: number): TimelineEntry[] {
   if (totalMonths > 12) {
     const adaptCount = totalMonths > 24 ? 3 : 2
     const adapt = shufflePick(ADAPTATION_EVENTS, adaptCount)
-    adapt.forEach((e, i) => {
-      const m = Math.min(12 + i * 4, totalMonths - 2)
-      events.push({ month: m, text: e.text, phase: 'adaptation' })
+      .sort((a, b) => a.month - b.month)
+    adapt.forEach((e) => {
+      const m = Math.min(e.month, totalMonths - 2)
+      events.push({ month: claimMonth(m), text: e.text, phase: 'adaptation' })
     })
   }
 
-  // 結局期（最後幾個月）
+  // 結局期（最後幾個月）— 確保在所有其他事件之後
   if (totalMonths > 6) {
+    const lastEventMonth = events.length > 0
+      ? Math.max(...events.map(e => e.month))
+      : 0
+    const finaleStart = Math.max(lastEventMonth + 1, totalMonths - 3)
     const finale = shufflePick(FINALE_EVENTS, 2)
     finale.forEach((e, i) => {
-      events.push({ month: Math.max(1, totalMonths + e.month + i), text: e.text, phase: 'finale' })
+      const m = Math.min(finaleStart + i, totalMonths - 1)
+      events.push({ month: claimMonth(m), text: e.text, phase: 'finale' })
     })
   }
 

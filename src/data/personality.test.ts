@@ -8,17 +8,19 @@ describe('getPersonality', () => {
       savings: 100_000,
       monthlyExpense: 20000,
       cityName: '台北市',
+      minLivingCost: 20744,
     })
     expect(p.id).toBe('instant-noodle')
     expect(p.name).toBe('泡麵戰士')
   })
 
-  it('returns 月光仙子 for very low savings', () => {
+  it('returns 月光仙子 for low savings relative to expenses', () => {
     const p = getPersonality({
       totalDays: 90,
-      savings: 30_000,
-      monthlyExpense: 15000,
+      savings: 50_000,
+      monthlyExpense: 20000,
       cityName: '台北市',
+      minLivingCost: 20744,
     })
     expect(p.id).toBe('moonlight')
   })
@@ -29,6 +31,7 @@ describe('getPersonality', () => {
       savings: 5_000_000,
       monthlyExpense: 20000,
       cityName: '台北市',
+      minLivingCost: 20744,
     })
     expect(p.id).toBe('legend')
   })
@@ -39,6 +42,7 @@ describe('getPersonality', () => {
       savings: 3_000_000,
       monthlyExpense: 20000,
       cityName: '台北市',
+      minLivingCost: 20744,
     })
     expect(p.id).toBe('fire-master')
   })
@@ -47,8 +51,9 @@ describe('getPersonality', () => {
     const p = getPersonality({
       totalDays: 900,
       savings: 500_000,
-      monthlyExpense: 15000,
+      monthlyExpense: 15500,
       cityName: '其他縣市',
+      minLivingCost: 15515,
     })
     expect(p.id).toBe('hermit')
   })
@@ -59,25 +64,49 @@ describe('getPersonality', () => {
       savings: 500_000,
       monthlyExpense: 30000,
       cityName: '台北市',
+      minLivingCost: 20744,
     })
     expect(p.id).toBe('yolo')
   })
 
-  it('returns 回巢青年 for very low expenses', () => {
+  it('returns 回巢青年 for expense far below city minimum', () => {
     const p = getPersonality({
       totalDays: 500,
       savings: 200_000,
       monthlyExpense: 10000,
       cityName: '台北市',
+      minLivingCost: 20744,
     })
     expect(p.id).toBe('parents-home')
   })
 
+  it('returns 被動收入幻想家 for high savings + medium duration', () => {
+    const p = getPersonality({
+      totalDays: 1200,
+      savings: 1_500_000,
+      monthlyExpense: 20000,
+      cityName: '台北市',
+      minLivingCost: 20744,
+    })
+    expect(p.id).toBe('investor')
+  })
+
+  it('returns 極簡修行者 for expense below city min + 1yr+', () => {
+    const p = getPersonality({
+      totalDays: 600,
+      savings: 300_000,
+      monthlyExpense: 13000,
+      cityName: '台南市',
+      minLivingCost: 15515,
+    })
+    expect(p.id).toBe('frugal-monk')
+  })
+
   it('always returns a personality (never undefined)', () => {
     const cases = [
-      { totalDays: 0, savings: 0, monthlyExpense: 20000, cityName: '台北市' },
-      { totalDays: 365, savings: 500_000, monthlyExpense: 18000, cityName: '新北市' },
-      { totalDays: 200, savings: 300_000, monthlyExpense: 16000, cityName: '台中市' },
+      { totalDays: 0, savings: 0, monthlyExpense: 20000, cityName: '台北市', minLivingCost: 20744 },
+      { totalDays: 365, savings: 500_000, monthlyExpense: 18000, cityName: '新北市', minLivingCost: 17750 },
+      { totalDays: 200, savings: 300_000, monthlyExpense: 16000, cityName: '台中市', minLivingCost: 16431 },
     ]
     for (const c of cases) {
       const p = getPersonality(c)

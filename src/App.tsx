@@ -63,7 +63,7 @@ function App() {
             <InputForm key="input" onResult={handleResult} />
           )}
           {state === 'loading' && result && city && (
-            <LoadingReveal key="loading" result={result} cityName={city.name} onDone={handleRevealDone} />
+            <LoadingReveal key="loading" result={result} city={city} onDone={handleRevealDone} />
           )}
           {state === 'result' && result && (
             <ResultView key="result" result={result} city={city!} onReset={handleReset} />

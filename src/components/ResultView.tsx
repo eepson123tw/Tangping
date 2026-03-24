@@ -35,6 +35,7 @@ export default function ResultView({ result, city, onReset }: Props) {
         savings: result.initialSavings,
         monthlyExpense: result.monthlyExpense,
         cityName: city.name,
+        minLivingCost: city.minLivingCost,
       }),
     [result, city],
   )
@@ -57,17 +58,29 @@ export default function ResultView({ result, city, onReset }: Props) {
   // 趣味對照
   const bobaCount = Math.round(result.totalSpent / 65)
 
-  const handleShare = async () => {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopyText = async () => {
     const durationText = result.totalDays < 30
       ? `${result.totalDays} 天`
       : `${years > 0 ? `${years}年` : ''}${months}個月（${result.totalDays}天）`
     const text = `我的躺平人格是「${personality.emoji} ${personality.name}」！\n在${city.name}可以躺平 ${durationText}\n比 ${percentile}% 的人能躺更久\n\n${personality.oneliner}\n\n躺平模擬器`
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: '躺平模擬器', text })
-      } catch { /* user cancelled */ }
-    } else {
-      await navigator.clipboard?.writeText(text)
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Fallback for browsers that block clipboard API
+      const textarea = document.createElement('textarea')
+      textarea.value = text
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     }
   }
 
@@ -327,9 +340,9 @@ export default function ResultView({ result, city, onReset }: Props) {
           <Button
             variant="outline"
             className="flex-1"
-            onClick={handleShare}
+            onClick={handleCopyText}
           >
-            複製文字
+            {copied ? '已複製！' : '複製文字'}
           </Button>
           <Button className="flex-1" onClick={() => setShowShareCard(true)}>
             分享卡片

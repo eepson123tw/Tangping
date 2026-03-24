@@ -62,8 +62,9 @@ export default function ShareCard({
         return
       }
 
-      // Try native share first (mobile), then download
-      if (navigator.share && navigator.canShare?.({ files: [new File([], '')] })) {
+      // Mobile: use native share (LINE, IG, etc). Desktop: download directly.
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+      if (isMobile && navigator.share && navigator.canShare?.({ files: [new File([], '')] })) {
         try {
           const file = new File([blob], 'tangping-result.png', { type: 'image/png' })
           await navigator.share({ files: [file], title: '躺平模擬器' })
