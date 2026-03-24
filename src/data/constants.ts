@@ -47,6 +47,8 @@ export const CITIES: CityData[] = [
   { name: '台南市', minLivingCost: 15515, source: '衛福部 115年公告' },
   { name: '新竹市', minLivingCost: 15515, source: '衛福部 115年公告（臺灣省）' },
   { name: '竹北天龍區', minLivingCost: 18500, source: '竹科工程師含淚估算' },
+  { name: '信義區貴婦', minLivingCost: 25000, source: '一杯咖啡 200 起跳的地方' },
+  { name: '花東慢活', minLivingCost: 13000, source: '鄰居是山跟海' },
   { name: '其他縣市', minLivingCost: 15515, source: '衛福部 115年公告' },
 ]
 
