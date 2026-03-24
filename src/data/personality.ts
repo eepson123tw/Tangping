@@ -53,8 +53,8 @@ const PERSONALITIES: TangpingPersonality[] = [
     title: '假裝在工作型',
     description: '你有足夠的時間坐在咖啡廳假裝寫小說。',
     oneliner: '拿鐵一杯，筆電打開，其實在看Netflix',
-    color: '#e8b84a',
-    gradient: ['#e8b84a', '#d4a030'],
+    color: '#c49a6c',
+    gradient: ['#c49a6c', '#a07850'],
   },
   {
     id: 'homebody',
@@ -83,8 +83,8 @@ const PERSONALITIES: TangpingPersonality[] = [
     title: '歸隱山林型',
     description: '搬去鄉下，養雞種菜，你的躺平是一場與世隔絕的修行。',
     oneliner: '你可以在山上養雞養到下次總統大選',
-    color: '#55a08f',
-    gradient: ['#55a08f', '#2d6a5e'],
+    color: '#7a9e7e',
+    gradient: ['#7a9e7e', '#4a7a52'],
   },
   {
     id: 'investor',
@@ -113,8 +113,8 @@ const PERSONALITIES: TangpingPersonality[] = [
     title: '傳說級存在',
     description: '十年以上的躺平資本。你不是躺平，你是財富自由。',
     oneliner: '你的存款讓其他人的躺平看起來像午休',
-    color: '#ff6b9d',
-    gradient: ['#ff6b9d', '#ee5a6f'],
+    color: '#c49bff',
+    gradient: ['#c49bff', '#9b6dff'],
   },
   {
     id: 'parents-home',

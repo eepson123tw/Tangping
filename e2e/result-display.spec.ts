@@ -38,15 +38,13 @@ test.describe('零天躺平結果（存款不足一個月）', () => {
     // 應顯示 0 天（紅色大字）
     await expect(page.locator('.text-destructive', { hasText: '0' })).toBeVisible()
 
-    // 不應出現手搖飲趣味對照
-    await expect(page.getByText('手搖飲')).not.toBeVisible()
-
-    // 不應出現餘額圖表
+    // 應出現速敗統計（手搖飲杯數 from 存款）但不應出現圖表和花費統計
+    await expect(page.getByText('手搖飲')).toBeVisible()
     await expect(page.getByText('存款餘額變化')).not.toBeVisible()
-
-    // 不應出現總花費 / 利息統計卡片
     await expect(page.getByText('總花費')).not.toBeVisible()
     await expect(page.getByText('利息收入')).not.toBeVisible()
+    // 不應出現便當（只在完整 fun fact 中）
+    await expect(page.getByText('排骨便當')).not.toBeVisible()
 
     // 但仍應顯示人格、描述、結局
     await expect(page.locator('.glass-card').first()).toBeVisible()
@@ -60,7 +58,7 @@ test.describe('零天躺平結果（存款不足一個月）', () => {
   test('存款 100 元 → 0 天，同樣隱藏統計區塊', async ({ page }) => {
     await submitAndWaitResult(page, '100')
 
-    await expect(page.getByText('手搖飲')).not.toBeVisible()
+    await expect(page.getByText('排骨便當')).not.toBeVisible()
     await expect(page.getByText('總花費')).not.toBeVisible()
   })
 })
@@ -75,7 +73,7 @@ test.describe('正常躺平結果', () => {
     await expect(page.getByText('個月', { exact: true })).toBeVisible()
 
     // 手搖飲趣味對照應出現
-    await expect(page.getByText('手搖飲')).toBeVisible()
+    await expect(page.getByText('杯手搖飲的人生')).toBeVisible()
 
     // 餘額圖表應出現
     await expect(page.getByText('存款餘額變化')).toBeVisible()

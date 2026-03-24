@@ -110,8 +110,6 @@ export default function ShareCard({
       }
 
       setStatus('done')
-      // Auto-close after share/download
-      setTimeout(onClose, 800)
     } catch (err) {
       console.error('ShareCard save failed:', err)
       setStatus('error')
@@ -150,10 +148,17 @@ export default function ShareCard({
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="flex flex-col items-center gap-2"
+              className="flex flex-col items-center gap-3"
+              onClick={(e) => e.stopPropagation()}
             >
               <span className="text-3xl">✓</span>
               <p className="text-foreground text-sm font-medium">圖片已儲存！</p>
+              <button
+                onClick={onClose}
+                className="mt-2 px-6 py-2 rounded-full text-sm text-muted-foreground border border-border hover:text-foreground transition-colors"
+              >
+                關閉
+              </button>
             </motion.div>
           )}
           {status === 'error' && (
@@ -266,7 +271,7 @@ export default function ShareCard({
             <div style={{ textAlign: 'center', width: '100%' }}>
               <p style={{ fontSize: 13, color: '#8a9a9e', margin: 0 }}>你也來躺平 →</p>
               <div style={{ width: 40, height: 1, background: 'rgba(255,255,255,0.1)', margin: '10px auto' }} />
-              <p style={{ fontSize: 12, color: '#5a6a6e', letterSpacing: 1, margin: 0 }}>tangping.zeabur.app</p>
+              <p style={{ fontSize: 12, color: '#7a8a8e', letterSpacing: 1, margin: 0 }}>tangping.zeabur.app</p>
             </div>
           </div>
         </div>

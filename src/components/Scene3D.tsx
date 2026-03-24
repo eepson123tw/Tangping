@@ -154,13 +154,13 @@ export default function Scene3D({ mode, progress = 0 }: Props) {
   }, [])
 
   if (contextLost) {
-    return <div className="w-full h-full bg-gradient-to-b from-[#0a0a1f] to-[#0a0a0f]" />
+    return <div className="w-full h-full bg-gradient-to-b from-[#101820] to-[#0a1015]" />
   }
 
   return (
     <Scene3DErrorBoundary
       fallback={
-        <div className="w-full h-full bg-gradient-to-b from-[#0a0a1f] to-[#0a0a0f]" />
+        <div className="w-full h-full bg-gradient-to-b from-[#101820] to-[#0a1015]" />
       }
     >
       <Canvas

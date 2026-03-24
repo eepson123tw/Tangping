@@ -92,7 +92,7 @@ export default function InputForm({ onResult }: Props) {
         transition={{ delay: 0.1, duration: 0.5 }}
         className="text-center mb-4 md:mb-8"
       >
-        <h1 className="text-3xl md:text-7xl font-black mb-2 bg-linear-to-r from-primary via-accent to-chart-4 bg-clip-text text-transparent">
+        <h1 className="text-3xl md:text-7xl font-black mb-2 bg-linear-to-r from-primary via-chart-3 to-accent bg-clip-text text-transparent">
           躺平模擬器
         </h1>
         <p className="text-muted-foreground text-base md:text-lg">

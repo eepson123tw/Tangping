@@ -180,7 +180,7 @@ export default function ResultView({ result, city, onReset }: Props) {
                 <CountUp
                   value={result.totalDays}
                   className="text-6xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
-                  duration={1.5}
+                  duration={1}
                 />
                 <span className="text-lg text-muted-foreground font-medium">天</span>
               </>
@@ -191,7 +191,7 @@ export default function ResultView({ result, city, onReset }: Props) {
                     <CountUp
                       value={years}
                       className="text-6xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
-                      duration={1.5}
+                      duration={1}
                     />
                     <span className="text-lg text-muted-foreground font-medium">年</span>
                   </>
@@ -199,7 +199,7 @@ export default function ResultView({ result, city, onReset }: Props) {
                 <CountUp
                   value={months}
                   className="text-6xl md:text-8xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent"
-                  duration={1.5}
+                  duration={1}
                 />
                 <span className="text-lg text-muted-foreground font-medium">個月</span>
               </>
@@ -259,6 +259,22 @@ export default function ResultView({ result, city, onReset }: Props) {
             </div>
           </div>
         </motion.div>
+
+        {/* 0 天速敗統計 */}
+        {result.totalDays === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+            className="glass-card rounded-xl py-3 px-4 text-center"
+          >
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              🧋 你的存款只夠買 <span className="text-accent font-bold">{Math.max(1, Math.round(result.initialSavings / 65))}</span> 杯手搖飲
+              <br />
+              🏠 在台北買得起 <span className="text-accent font-bold">{taipeiPing}</span> 坪{taipeiPingNote}
+            </p>
+          </motion.div>
+        )}
 
         {/* 以下區塊僅在有實際躺平天數時才顯示 */}
         {result.totalDays > 0 && (
