@@ -38,10 +38,18 @@ export default function ShareCard({
         scale: 2,
         useCORS: true,
         logging: false,
-        // Force computed styles to avoid oklch issues
         onclone: (doc) => {
+          // Fix background gradient (oklch compat)
           const el = doc.querySelector('[data-share-card]') as HTMLElement
           if (el) el.style.background = 'linear-gradient(160deg, #0a1a1f 0%, #0d2428 30%, #111820 60%, #0a1215 100%)'
+          // Fix gradient text — html2canvas can't render background-clip:text
+          const gradientText = doc.querySelector('[data-gradient-text]') as HTMLElement
+          if (gradientText) {
+            gradientText.style.background = 'none'
+            gradientText.style.webkitBackgroundClip = 'unset'
+            gradientText.style.webkitTextFillColor = '#4db8a4'
+            gradientText.style.color = '#4db8a4'
+          }
         },
       })
 
@@ -93,38 +101,51 @@ export default function ShareCard({
           <div
             ref={cardRef}
             data-share-card
-            className="w-[270px] rounded-2xl overflow-hidden"
             style={{
-              aspectRatio: '9/16',
-              background: `linear-gradient(160deg, #0a1a1f 0%, #0d2428 30%, #111820 60%, #0a1215 100%)`,
+              width: 270,
+              height: 480,
+              borderRadius: 16,
+              overflow: 'hidden',
+              background: 'linear-gradient(160deg, #0a1a1f 0%, #0d2428 30%, #111820 60%, #0a1215 100%)',
             }}
           >
-            <div className="h-full flex flex-col items-center justify-between py-8 px-5">
+            <div
+              style={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '32px 20px',
+                boxSizing: 'border-box',
+              }}
+            >
               {/* Top */}
-              <div className="text-center">
-                <p style={{ fontSize: 10, color: '#8a9a9e', letterSpacing: 2 }}>
+              <div style={{ textAlign: 'center' }}>
+                <p style={{ fontSize: 10, color: '#8a9a9e', letterSpacing: 2, margin: 0 }}>
                   躺 平 模 擬 器
                 </p>
               </div>
 
               {/* Middle — personality + numbers */}
-              <div className="text-center space-y-4 w-full">
+              <div style={{ textAlign: 'center', width: '100%' }}>
                 {/* Emoji */}
                 <div style={{ fontSize: 48 }}>{personality.emoji}</div>
 
                 {/* Personality name */}
-                <div>
+                <div style={{ marginTop: 16 }}>
                   <p
                     style={{
                       fontSize: 22,
                       fontWeight: 800,
                       color: personality.color,
                       lineHeight: 1.2,
+                      margin: 0,
                     }}
                   >
                     {personality.name}
                   </p>
-                  <p style={{ fontSize: 11, color: '#7a8a8e', marginTop: 4 }}>
+                  <p style={{ fontSize: 11, color: '#7a8a8e', marginTop: 4, marginBottom: 0 }}>
                     {personality.title}
                   </p>
                 </div>
@@ -135,30 +156,33 @@ export default function ShareCard({
                     background: 'rgba(255,255,255,0.04)',
                     borderRadius: 12,
                     padding: '12px 16px',
+                    marginTop: 16,
                   }}
                 >
-                  <p style={{ fontSize: 10, color: '#7a8a8e', marginBottom: 4 }}>
+                  <p style={{ fontSize: 10, color: '#7a8a8e', marginBottom: 4, marginTop: 0 }}>
                     在{cityName}可以躺
                   </p>
                   <p
+                    data-gradient-text
                     style={{
                       fontSize: 36,
                       fontWeight: 900,
-                      background: `linear-gradient(90deg, #4db8a4, #e8b84a)`,
+                      background: 'linear-gradient(90deg, #4db8a4, #e8b84a)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       lineHeight: 1.1,
+                      margin: 0,
                     }}
                   >
                     {years > 0 ? `${years}年` : ''}{months}個月
                   </p>
-                  <p style={{ fontSize: 10, color: '#6a7a7e', marginTop: 2 }}>
+                  <p style={{ fontSize: 10, color: '#6a7a7e', marginTop: 2, marginBottom: 0 }}>
                     約 {result.totalDays.toLocaleString('zh-TW')} 天
                   </p>
                 </div>
 
                 {/* Percentile */}
-                <div style={{ padding: '0 8px' }}>
+                <div style={{ padding: '0 8px', marginTop: 16 }}>
                   <div
                     style={{
                       height: 6,
@@ -176,7 +200,7 @@ export default function ShareCard({
                       }}
                     />
                   </div>
-                  <p style={{ fontSize: 10, color: '#7a8a8e', marginTop: 4 }}>
+                  <p style={{ fontSize: 10, color: '#7a8a8e', marginTop: 4, marginBottom: 0 }}>
                     勝過 {percentile}% 的人
                   </p>
                 </div>
@@ -189,6 +213,8 @@ export default function ShareCard({
                     fontStyle: 'italic',
                     lineHeight: 1.5,
                     padding: '0 4px',
+                    marginTop: 16,
+                    marginBottom: 0,
                   }}
                 >
                   「{personality.oneliner}」
@@ -196,13 +222,14 @@ export default function ShareCard({
               </div>
 
               {/* Bottom — ending + branding */}
-              <div className="text-center w-full space-y-3">
+              <div style={{ textAlign: 'center', width: '100%' }}>
                 <p
                   style={{
                     fontSize: 10,
                     color: '#6a7a7e',
                     lineHeight: 1.6,
                     padding: '0 4px',
+                    margin: 0,
                   }}
                 >
                   {ending}
@@ -212,10 +239,10 @@ export default function ShareCard({
                     width: 40,
                     height: 1,
                     background: 'rgba(255,255,255,0.1)',
-                    margin: '0 auto',
+                    margin: '12px auto',
                   }}
                 />
-                <p style={{ fontSize: 9, color: '#4a5a5e', letterSpacing: 1 }}>
+                <p style={{ fontSize: 9, color: '#4a5a5e', letterSpacing: 1, margin: 0 }}>
                   tangping.app
                 </p>
               </div>
@@ -223,7 +250,7 @@ export default function ShareCard({
           </div>
 
           {/* Actions below card */}
-          <div className="flex gap-3 w-[270px]">
+          <div style={{ display: 'flex', gap: 12, width: 270 }}>
             <Button variant="outline" className="flex-1" onClick={onClose}>
               關閉
             </Button>
