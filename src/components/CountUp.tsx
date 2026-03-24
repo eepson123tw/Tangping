@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion, useSpring, useTransform } from 'framer-motion'
 
 interface Props {
@@ -24,16 +24,19 @@ export default function CountUp({
     return `${prefix}${Number(num).toLocaleString('zh-TW', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}${suffix}`
   })
 
-  const [displayValue, setDisplayValue] = useState(`${prefix}0${suffix}`)
+  const ref = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
     spring.set(value)
   }, [spring, value])
 
+  // Update DOM directly via subscription — avoids setState on every animation frame
   useEffect(() => {
-    const unsubscribe = display.on('change', (v) => setDisplayValue(v))
+    const unsubscribe = display.on('change', (v) => {
+      if (ref.current) ref.current.textContent = v
+    })
     return unsubscribe
   }, [display])
 
-  return <motion.span className={className}>{displayValue}</motion.span>
+  return <motion.span ref={ref} className={className}>{`${prefix}0${suffix}`}</motion.span>
 }

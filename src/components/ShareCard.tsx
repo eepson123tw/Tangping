@@ -133,6 +133,9 @@ export default function ShareCard({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
+        role="dialog"
+        aria-modal="true"
+        aria-label="分享卡片"
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
         onClick={status !== 'generating' ? onClose : undefined}
       >
@@ -156,12 +159,20 @@ export default function ShareCard({
           {status === 'error' && (
             <div className="flex flex-col items-center gap-3">
               <p className="text-destructive text-sm">產生圖片失敗</p>
-              <button
-                onClick={onClose}
-                className="text-muted-foreground text-xs underline"
-              >
-                關閉
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setStatus('generating'); setTimeout(handleGenerate, 300) }}
+                  className="text-foreground text-xs underline"
+                >
+                  重試
+                </button>
+                <button
+                  onClick={onClose}
+                  className="text-muted-foreground text-xs underline"
+                >
+                  關閉
+                </button>
+              </div>
             </div>
           )}
         </div>

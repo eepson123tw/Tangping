@@ -159,9 +159,9 @@ export default function InputForm({ onResult }: Props) {
               onClick={() => setShowAdvanced(!showAdvanced)}
               aria-expanded={showAdvanced}
               aria-controls="advanced-settings"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors py-1"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
             >
-              {showAdvanced ? '▴ 收起' : '▾ 展開'}進階設定
+              {showAdvanced ? '▴ 收起' : '▾ 自訂月支出等'}進階設定
             </button>
 
             {showAdvanced && (
@@ -206,7 +206,7 @@ export default function InputForm({ onResult }: Props) {
         </div>
 
         {/* Footer */}
-        <p className="mt-4 text-[10px] text-muted-foreground text-center leading-relaxed">
+        <p className="mt-4 text-xs text-muted-foreground text-center leading-relaxed">
           數據來源：主計總處、衛福部、勞動部、央行、健保署、勞保局
         </p>
       </motion.div>

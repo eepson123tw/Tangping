@@ -1,7 +1,9 @@
-import { useRef, useMemo, Component, type ReactNode } from 'react'
+import { useRef, useMemo, useState, useCallback, Component, type ReactNode } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Float, Stars } from '@react-three/drei'
 import * as THREE from 'three'
+
+const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
 
 // ErrorBoundary to prevent 3D crashes from killing the whole app
 class Scene3DErrorBoundary extends Component<
@@ -138,6 +140,23 @@ function TangpingScene({ progress = 0 }: { progress?: number }) {
 }
 
 export default function Scene3D({ mode, progress = 0 }: Props) {
+  const [contextLost, setContextLost] = useState(false)
+
+  const handleCreated = useCallback((state: { gl: THREE.WebGLRenderer }) => {
+    const canvas = state.gl.domElement
+    canvas.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault()
+      setContextLost(true)
+    })
+    canvas.addEventListener('webglcontextrestored', () => {
+      setContextLost(false)
+    })
+  }, [])
+
+  if (contextLost) {
+    return <div className="w-full h-full bg-gradient-to-b from-[#0a0a1f] to-[#0a0a0f]" />
+  }
+
   return (
     <Scene3DErrorBoundary
       fallback={
@@ -148,13 +167,14 @@ export default function Scene3D({ mode, progress = 0 }: Props) {
         camera={{ position: [0, 1, 5], fov: 50 }}
         style={{ pointerEvents: 'none' }}
         dpr={[1, 2]}
+        onCreated={handleCreated}
       >
         <ambientLight intensity={0.7} />
         <directionalLight position={[5, 5, 5]} intensity={1.2} />
         <pointLight position={[-3, 2, 2]} intensity={0.6} color="#4db8a4" />
         <pointLight position={[3, -1, 3]} intensity={0.4} color="#e8b84a" />
 
-        <Stars radius={40} depth={40} count={1000} factor={5} fade speed={0.8} />
+        <Stars radius={40} depth={40} count={isMobile ? 500 : 1000} factor={5} fade speed={0.8} />
 
         {mode === 'idle' && <IdleScene />}
         {mode === 'tangping' && <TangpingScene progress={progress} />}

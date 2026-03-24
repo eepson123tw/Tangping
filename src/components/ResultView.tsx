@@ -140,7 +140,7 @@ export default function ResultView({ result, city, onReset }: Props) {
               <span className="text-2xl">{personality.emoji}</span>
               <div className="text-left">
                 <span style={{ color: personality.color }}>{personality.name}</span>
-                <span className="block text-[10px] text-muted-foreground font-normal">{personality.title}</span>
+                <span className="block text-xs text-muted-foreground font-normal">{personality.title}</span>
               </div>
             </div>
           </motion.div>
@@ -212,8 +212,8 @@ export default function ResultView({ result, city, onReset }: Props) {
           </p>
           {/* Percentile bar */}
           <div className="pt-1">
-            <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
-              <span>你的存款</span>
+            <div className="flex justify-between text-xs text-muted-foreground mb-1">
+              <span>你的存款實力</span>
               <span>勝過 {percentile}% 的人</span>
             </div>
             <div className="h-2 rounded-full bg-border/50 overflow-hidden">
@@ -268,7 +268,7 @@ export default function ResultView({ result, city, onReset }: Props) {
         {/* Detail stats — collapsible */}
         <details className="text-xs text-muted-foreground">
           <summary className="cursor-pointer hover:text-foreground/60 transition-colors text-center">
-            計算詳情
+            計算詳情（月支出、社保）
           </summary>
           <div className="grid grid-cols-2 gap-3 mt-3">
             <StatCard label="每月生活費" value={result.monthlyExpense} prefix="NT$ " color="#e8b84a" icon="🧾" />
@@ -287,7 +287,7 @@ export default function ResultView({ result, city, onReset }: Props) {
             background: `linear-gradient(135deg, ${personality.gradient[0]}08, ${personality.gradient[1]}08)`,
           }}
         >
-          <p className="text-[10px] text-muted-foreground mb-1.5">是什麼結束了你的躺平？</p>
+          <p className="text-xs text-muted-foreground mb-1.5">是什麼結束了你的躺平？</p>
           <p className="text-sm font-medium leading-relaxed">{ending}</p>
         </motion.div>
 
@@ -308,7 +308,8 @@ export default function ResultView({ result, city, onReset }: Props) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="text-[10px] text-muted-foreground"
+          open
+          className="text-xs text-muted-foreground"
         >
           <summary className="cursor-pointer hover:text-foreground/60 transition-colors text-center">
             資料來源
@@ -326,7 +327,7 @@ export default function ResultView({ result, city, onReset }: Props) {
         {/* Actions — share primary, others secondary */}
         <div className="space-y-3 pt-2">
           <Button className="w-full h-12 text-base font-bold" onClick={() => setShowShareCard(true)}>
-            分享卡片
+            📤 分享卡片
           </Button>
           <div className="flex gap-3">
             <Button
