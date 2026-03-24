@@ -61,22 +61,28 @@ export default function ResultView({ result, city, sharedView = false, sharedPer
   const years = Math.floor(result.totalYears)
   const months = result.totalMonths % 12
 
-  // 趣味對照
+  // 趣味對照 — 使用選擇城市的在地數據
   const bobaCount = Math.round(result.totalSpent / 65)
-  const lunchBoxCount = Math.round(result.totalSpent / 100)
-  // 台北平均房價約 75 萬/坪（2025 年）
-  const taipeiPingNum = result.initialSavings / 750000
-  const taipeiPing = taipeiPingNum.toFixed(1)
-  const taipeiPingNote =
-    taipeiPingNum < 1 ? '（連廁所都不夠）' :
-    taipeiPingNum < 3 ? '（大概一間廁所）' :
-    taipeiPingNum < 15 ? '（一間小套房）' :
-    taipeiPingNum < 50 ? '（一間正常的房子）' :
-    taipeiPingNum < 200 ? '（一層豪宅）' : '（你是地主嗎？）'
-  const interestMonths = Math.round(result.totalInterestEarned / result.monthlyExpense)
-  const interestLabel = interestMonths > 1200
-    ? '利息足以永遠撐下去'
-    : `利息只多撐 ${interestMonths} 個月`
+  // 選 2 個在地趣味對照（用 totalDays 當 seed 確保穩定）
+  const localFunFacts = useMemo(() => {
+    const seed = result.totalDays
+    const facts = city.funFacts
+    if (facts.length <= 2) return facts
+    const idx1 = seed % facts.length
+    const idx2 = (seed + 1 + Math.floor(seed / facts.length)) % facts.length
+    const picked = [facts[idx1]]
+    if (idx2 !== idx1) picked.push(facts[idx2])
+    else picked.push(facts[(idx1 + 1) % facts.length])
+    return picked
+  }, [city, result.totalDays])
+  const pingNum = result.initialSavings / (city.pricePerPing * 10000)
+  const pingDisplay = pingNum.toFixed(1)
+  const pingNote =
+    pingNum < 1 ? '（連廁所都不夠）' :
+    pingNum < 3 ? '（大概一間廁所）' :
+    pingNum < 15 ? '（一間小套房）' :
+    pingNum < 50 ? '（一間正常的房子）' :
+    pingNum < 200 ? '（一層豪宅）' : '（你是地主嗎？）'
 
   const [copied, setCopied] = useState(false)
 
@@ -287,7 +293,7 @@ export default function ResultView({ result, city, sharedView = false, sharedPer
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   🧋 你的存款只夠買 <span className="text-accent font-bold">{Math.max(1, Math.round(result.initialSavings / 65))}</span> 杯手搖飲
                   <br />
-                  🏠 在台北買得起 <span className="text-accent font-bold">{taipeiPing}</span> 坪{taipeiPingNote}
+                  🏠 {city.flavor} <span className="text-accent font-bold">{pingDisplay}</span> 坪{pingNote}
                 </p>
               </motion.div>
             )}
@@ -304,9 +310,10 @@ export default function ResultView({ result, city, sharedView = false, sharedPer
                 >
                   <p className="text-xs text-muted-foreground leading-relaxed space-y-0.5">
                     <span className="block">🧋 相當於喝 <span className="text-accent font-bold">{bobaCount.toLocaleString('zh-TW')}</span> 杯手搖飲的人生</span>
-                    <span className="block">🍱 或是吃 <span className="text-accent font-bold">{lunchBoxCount.toLocaleString('zh-TW')}</span> 個排骨便當</span>
-                    <span className="block">🏠 你的存款在台北買得起 <span className="text-accent font-bold">{taipeiPing}</span> 坪{taipeiPingNote}</span>
-                    <span className="block">📉 通膨年蝕 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元，{interestLabel}</span>
+                    {localFunFacts.map((fact, i) => (
+                      <span key={i} className="block">{fact.emoji} {fact.template.replace('{n}', Math.round(result.totalSpent / fact.unitPrice).toLocaleString('zh-TW'))}</span>
+                    ))}
+                    <span className="block">🏠 你的存款{city.flavor} <span className="text-accent font-bold">{pingDisplay}</span> 坪{pingNote}</span>
                   </p>
                 </motion.div>
 
