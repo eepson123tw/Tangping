@@ -3,8 +3,8 @@ import { AnimatePresence } from 'framer-motion'
 import InputForm from './components/InputForm'
 import ResultView from './components/ResultView'
 import LoadingReveal from './components/LoadingReveal'
-import { simulate, type SimulationResult } from './utils/simulator'
-import { CITIES, MEDIAN_SALARY, type CityData } from './data/constants'
+import type { SimulationResult } from './utils/simulator'
+import { CITIES, type CityData } from './data/constants'
 
 class ErrorBoundary extends Component<
   { children: ReactNode; onError: () => void },
@@ -38,29 +38,35 @@ function App() {
   const [state, setState] = useState<AppState>('input')
   const [result, setResult] = useState<SimulationResult | null>(null)
   const [city, setCity] = useState<CityData | null>(null)
+  const [sharedView, setSharedView] = useState(false)
 
-  // Auto-calculate from encoded URL param (?d=base64)
+  // Restore shared result from URL (?r=base64)
+  // Only contains public display data — no savings/salary
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    const encoded = params.get('d')
+    const encoded = params.get('r')
     if (!encoded) return
     try {
       const data = JSON.parse(atob(encoded))
-      const savings = data.s
-      if (!savings || savings <= 0) return
-      const salary = data.m || MEDIAN_SALARY
       const cityIdx = Math.min(data.c || 0, CITIES.length - 1)
-      const expense = data.e || undefined
       const c = CITIES[cityIdx]
-      const r = simulate({
-        savings, monthlySalaryBeforeQuit: salary, city: c,
-        monthlyExpenseOverride: expense,
-      })
+      const r: SimulationResult = {
+        totalDays: data.d ?? 0,
+        totalMonths: Math.floor((data.d ?? 0) / 30.44),
+        totalYears: (data.d ?? 0) / 365.25,
+        timeline: [],
+        finalBalance: 0,
+        totalSpent: 0,
+        totalInterestEarned: 0,
+        initialSavings: 0,
+        monthlyExpense: c.minLivingCost,
+        capped: (data.d ?? 0) >= 36528,
+      }
       setResult(r)
       setCity(c)
+      setSharedView(true)
       setState('result')
     } catch { /* invalid param, ignore */ }
-    // Clean URL without reload
     window.history.replaceState({}, '', window.location.pathname)
   }, [])
 
@@ -91,7 +97,7 @@ function App() {
             <LoadingReveal key="loading" result={result} city={city} onDone={handleRevealDone} />
           )}
           {state === 'result' && result && (
-            <ResultView key="result" result={result} city={city!} onReset={handleReset} />
+            <ResultView key="result" result={result} city={city!} sharedView={sharedView} onReset={handleReset} />
           )}
         </AnimatePresence>
       </div>

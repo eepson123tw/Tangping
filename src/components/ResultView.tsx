@@ -18,10 +18,11 @@ const Scene3D = lazy(() => import('./Scene3D'))
 interface Props {
   result: SimulationResult
   city: CityData
+  sharedView?: boolean
   onReset: () => void
 }
 
-export default function ResultView({ result, city, onReset }: Props) {
+export default function ResultView({ result, city, sharedView = false, onReset }: Props) {
   const [sceneProgress, setSceneProgress] = useState(0)
   const [showShareCard, setShowShareCard] = useState(false)
 
@@ -76,13 +77,13 @@ export default function ResultView({ result, city, onReset }: Props) {
 
   const [copied, setCopied] = useState(false)
 
-  // Build share URL with encoded params (不直接暴露存款金額)
+  // Build share URL — only public data (days + city), no financial info
   const shareUrl = useMemo(() => {
     const cityIdx = CITIES.findIndex(c => c.name === city.name)
-    const data: Record<string, number> = { s: result.initialSavings }
+    const data: Record<string, number> = { d: result.totalDays }
     if (cityIdx > 0) data.c = cityIdx
     const encoded = btoa(JSON.stringify(data))
-    return `https://tangping.zeabur.app/?d=${encoded}`
+    return `https://tangping.zeabur.app/?r=${encoded}`
   }, [result, city])
 
   const handleCopyText = async () => {
@@ -269,73 +270,78 @@ export default function ResultView({ result, city, onReset }: Props) {
           </div>
         </motion.div>
 
-        {/* 0 天速敗統計 */}
-        {result.totalDays === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.45 }}
-            className="glass-card rounded-xl py-3 px-4 text-center"
-          >
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              🧋 你的存款只夠買 <span className="text-accent font-bold">{Math.max(1, Math.round(result.initialSavings / 65))}</span> 杯手搖飲
-              <br />
-              🏠 在台北買得起 <span className="text-accent font-bold">{taipeiPing}</span> 坪{taipeiPingNote}
-            </p>
-          </motion.div>
-        )}
-
-        {/* 以下區塊僅在有實際躺平天數時才顯示 */}
-        {result.totalDays > 0 && (
+        {/* 財務細節 — 分享檢視時隱藏（保護隱私） */}
+        {!sharedView && (
           <>
-            {/* Fun fact */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45 }}
-              className="glass-card rounded-xl py-3 px-4 text-center"
-            >
-              <p className="text-xs text-muted-foreground leading-relaxed space-y-0.5">
-                <span className="block">🧋 相當於喝 <span className="text-accent font-bold">{bobaCount.toLocaleString('zh-TW')}</span> 杯手搖飲的人生</span>
-                <span className="block">🍱 或是吃 <span className="text-accent font-bold">{lunchBoxCount.toLocaleString('zh-TW')}</span> 個排骨便當</span>
-                <span className="block">🏠 你的存款在台北買得起 <span className="text-accent font-bold">{taipeiPing}</span> 坪{taipeiPingNote}</span>
-                <span className="block">📉 通膨年蝕 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元，{interestLabel}</span>
-              </p>
-            </motion.div>
+            {/* 0 天速敗統計 */}
+            {result.totalDays === 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45 }}
+                className="glass-card rounded-xl py-3 px-4 text-center"
+              >
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  🧋 你的存款只夠買 <span className="text-accent font-bold">{Math.max(1, Math.round(result.initialSavings / 65))}</span> 杯手搖飲
+                  <br />
+                  🏠 在台北買得起 <span className="text-accent font-bold">{taipeiPing}</span> 坪{taipeiPingNote}
+                </p>
+              </motion.div>
+            )}
 
-            {/* Balance chart */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="glass-card rounded-xl py-4 px-4"
-            >
-              <BalanceChart timeline={result.timeline} />
-            </motion.div>
+            {/* 以下區塊僅在有實際躺平天數時才顯示 */}
+            {result.totalDays > 0 && (
+              <>
+                {/* Fun fact */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.45 }}
+                  className="glass-card rounded-xl py-3 px-4 text-center"
+                >
+                  <p className="text-xs text-muted-foreground leading-relaxed space-y-0.5">
+                    <span className="block">🧋 相當於喝 <span className="text-accent font-bold">{bobaCount.toLocaleString('zh-TW')}</span> 杯手搖飲的人生</span>
+                    <span className="block">🍱 或是吃 <span className="text-accent font-bold">{lunchBoxCount.toLocaleString('zh-TW')}</span> 個排骨便當</span>
+                    <span className="block">🏠 你的存款在台北買得起 <span className="text-accent font-bold">{taipeiPing}</span> 坪{taipeiPingNote}</span>
+                    <span className="block">📉 通膨年蝕 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元，{interestLabel}</span>
+                  </p>
+                </motion.div>
 
-            {/* Stats grid — essential 2 */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="grid grid-cols-2 gap-3"
-            >
-              <StatCard label="總花費" value={result.totalSpent} prefix="NT$ " color="#ff6b6b" icon="💸" compact />
-              <StatCard label="利息收入" value={result.totalInterestEarned} prefix="NT$ " color="#4db8a4" icon="🏦" compact />
-            </motion.div>
+                {/* Balance chart */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="glass-card rounded-xl py-4 px-4"
+                >
+                  <BalanceChart timeline={result.timeline} />
+                </motion.div>
+
+                {/* Stats grid — essential 2 */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="grid grid-cols-2 gap-3"
+                >
+                  <StatCard label="總花費" value={result.totalSpent} prefix="NT$ " color="#ff6b6b" icon="💸" compact />
+                  <StatCard label="利息收入" value={result.totalInterestEarned} prefix="NT$ " color="#4db8a4" icon="🏦" compact />
+                </motion.div>
+              </>
+            )}
+
+            {/* Detail stats — collapsible */}
+            <details className="text-xs text-muted-foreground">
+              <summary className="cursor-pointer hover:text-foreground/60 transition-colors text-center">
+                計算詳情（月支出、社保）
+              </summary>
+              <div className="grid grid-cols-2 gap-3 mt-3">
+                <StatCard label="每月生活費" value={result.monthlyExpense} prefix="NT$ " color="#e8b84a" icon="🧾" />
+                <StatCard label="每月社保" value={SOCIAL_INSURANCE_MONTHLY} prefix="NT$ " color="#4db8a4" icon="🏥" />
+              </div>
+            </details>
           </>
         )}
-
-        {/* Detail stats — collapsible */}
-        <details className="text-xs text-muted-foreground">
-          <summary className="cursor-pointer hover:text-foreground/60 transition-colors text-center">
-            計算詳情（月支出、社保）
-          </summary>
-          <div className="grid grid-cols-2 gap-3 mt-3">
-            <StatCard label="每月生活費" value={result.monthlyExpense} prefix="NT$ " color="#e8b84a" icon="🧾" />
-            <StatCard label="每月社保" value={SOCIAL_INSURANCE_MONTHLY} prefix="NT$ " color="#4db8a4" icon="🏥" />
-          </div>
-        </details>
 
         {/* Ending — moved before timeline for emotional impact */}
         <motion.div
@@ -384,23 +390,31 @@ export default function ResultView({ result, city, onReset }: Props) {
           </div>
         </motion.details>
 
-        {/* Actions — share primary, others secondary */}
+        {/* Actions */}
         <div className="space-y-3 pt-2">
-          <Button className="w-full h-12 text-base font-bold" onClick={() => setShowShareCard(true)}>
-            📤 分享卡片
-          </Button>
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              className="flex-1 h-11"
-              onClick={handleCopyText}
-            >
-              {copied ? '已複製！' : '複製文字'}
+          {sharedView ? (
+            <Button className="w-full h-12 text-base font-bold" onClick={onReset}>
+              我也來算算能躺多久
             </Button>
-            <Button variant="outline" className="flex-1 h-11" onClick={onReset}>
-              重新計算
-            </Button>
-          </div>
+          ) : (
+            <>
+              <Button className="w-full h-12 text-base font-bold" onClick={() => setShowShareCard(true)}>
+                📤 分享卡片
+              </Button>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1 h-11"
+                  onClick={handleCopyText}
+                >
+                  {copied ? '已複製！' : '複製文字'}
+                </Button>
+                <Button variant="outline" className="flex-1 h-11" onClick={onReset}>
+                  重新計算
+                </Button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Share card modal */}
