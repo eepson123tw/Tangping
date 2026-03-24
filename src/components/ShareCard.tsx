@@ -234,7 +234,7 @@ export default function ShareCard({
                 <p
                   data-gradient-text
                   style={{
-                    fontSize: 44,
+                    fontSize: result.totalDays === 0 ? 56 : 44,
                     fontWeight: 900,
                     background: `linear-gradient(90deg, ${personality.gradient[0]}, ${personality.gradient[1]})`,
                     WebkitBackgroundClip: 'text',
@@ -243,11 +243,22 @@ export default function ShareCard({
                     margin: 0,
                   }}
                 >
-                  {years > 0 ? `${years}年` : ''}{months}個月
+                  {result.totalDays === 0
+                    ? '0 天'
+                    : result.capped
+                      ? '超過 100 年'
+                      : `${years > 0 ? `${years}年` : ''}${months}個月`}
                 </p>
-                <p style={{ fontSize: 12, color: '#7a8a8e', marginTop: 4, marginBottom: 0 }}>
-                  約 {result.totalDays.toLocaleString('zh-TW')} 天
-                </p>
+                {result.totalDays > 0 && !result.capped && (
+                  <p style={{ fontSize: 12, color: '#7a8a8e', marginTop: 4, marginBottom: 0 }}>
+                    約 {result.totalDays.toLocaleString('zh-TW')} 天
+                  </p>
+                )}
+                {result.capped && (
+                  <p style={{ fontSize: 12, color: personality.color, marginTop: 4, marginBottom: 0 }}>
+                    利息就夠生活了！
+                  </p>
+                )}
               </div>
 
               <div style={{ padding: '0 12px', marginTop: 20 }}>
