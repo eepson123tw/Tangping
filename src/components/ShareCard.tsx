@@ -35,6 +35,46 @@ export default function ShareCard({
         useCORS: true,
         logging: false,
         onclone: (doc) => {
+          // Override oklch CSS custom properties with hex equivalents
+          // html2canvas cannot parse oklch() color functions
+          const root = doc.documentElement
+          const hexOverrides: Record<string, string> = {
+            '--background': '#101820',
+            '--foreground': '#e8eaee',
+            '--card': 'rgba(22,28,38,0.6)',
+            '--card-foreground': '#e8eaee',
+            '--popover': '#1a2230',
+            '--popover-foreground': '#e8eaee',
+            '--primary': '#34b8a8',
+            '--primary-foreground': '#0e1e1c',
+            '--secondary': '#252c36',
+            '--secondary-foreground': '#cdd0d5',
+            '--muted': '#252c36',
+            '--muted-foreground': '#8a8f96',
+            '--accent': '#d4a747',
+            '--accent-foreground': '#2a1f0f',
+            '--destructive': '#d44030',
+            '--border': '#2f3641',
+            '--input': '#252c36',
+            '--ring': '#34b8a8',
+            '--chart-1': '#34b8a8',
+            '--chart-2': '#d4a747',
+            '--chart-3': '#3daa6a',
+            '--chart-4': '#d44030',
+            '--chart-5': '#b050d0',
+            '--sidebar': '#161e28',
+            '--sidebar-foreground': '#e8eaee',
+            '--sidebar-primary': '#34b8a8',
+            '--sidebar-primary-foreground': '#fafafa',
+            '--sidebar-accent': '#252c36',
+            '--sidebar-accent-foreground': '#e8eaee',
+            '--sidebar-border': '#2f3641',
+            '--sidebar-ring': '#34b8a8',
+          }
+          for (const [prop, val] of Object.entries(hexOverrides)) {
+            root.style.setProperty(prop, val)
+          }
+
           const el = doc.querySelector('[data-share-card]') as HTMLElement
           if (el) el.style.background = 'linear-gradient(160deg, #0a1a1f 0%, #0d2428 30%, #111820 60%, #0a1215 100%)'
           const gradientText = doc.querySelector('[data-gradient-text]') as HTMLElement
@@ -215,7 +255,7 @@ export default function ShareCard({
             <div style={{ textAlign: 'center', width: '100%' }}>
               <p style={{ fontSize: 13, color: '#8a9a9e', margin: 0 }}>你也來躺平 →</p>
               <div style={{ width: 40, height: 1, background: 'rgba(255,255,255,0.1)', margin: '10px auto' }} />
-              <p style={{ fontSize: 12, color: '#5a6a6e', letterSpacing: 1, margin: 0 }}>tangping.app</p>
+              <p style={{ fontSize: 12, color: '#5a6a6e', letterSpacing: 1, margin: 0 }}>tangping.zeabur.app</p>
             </div>
           </div>
         </div>

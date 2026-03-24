@@ -237,10 +237,10 @@ export default function ResultView({ result, city, onReset }: Props) {
           transition={{ delay: 0.45 }}
           className="glass-card rounded-xl py-3 px-4 text-center"
         >
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             🧋 相當於喝 <span className="text-accent font-bold">{bobaCount.toLocaleString('zh-TW')}</span> 杯手搖飲的人生
-            <span className="mx-2 opacity-30">·</span>
-            通膨年蝕 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元，利息只多撐 {Math.round(result.totalInterestEarned / result.monthlyExpense)} 個月
+            <br />
+            📉 通膨年蝕 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元，利息只多撐 {Math.round(result.totalInterestEarned / result.monthlyExpense)} 個月
           </p>
         </motion.div>
 
