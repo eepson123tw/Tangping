@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import type { SimulationResult } from '@/utils/simulator'
 import type { CityData } from '@/data/constants'
-import { SOCIAL_INSURANCE_MONTHLY } from '@/data/constants'
+import { CITIES, SOCIAL_INSURANCE_MONTHLY } from '@/data/constants'
 import { formatCompact } from '@/utils/format'
 import { getPersonality } from '@/data/personality'
 import { getSavingsPercentile } from '@/data/percentile'
@@ -76,13 +76,21 @@ export default function ResultView({ result, city, onReset }: Props) {
 
   const [copied, setCopied] = useState(false)
 
+  // Build share URL with params so recipients see the same result
+  const shareUrl = useMemo(() => {
+    const cityIdx = CITIES.findIndex(c => c.name === city.name)
+    const params = new URLSearchParams({ s: String(result.initialSavings) })
+    if (cityIdx > 0) params.set('c', String(cityIdx))
+    return `https://tangping.zeabur.app/?${params}`
+  }, [result, city])
+
   const handleCopyText = async () => {
     const durationText = result.capped
       ? '超過 100 年（財務自由！）'
       : result.totalDays < 30
         ? `${result.totalDays} 天`
         : `${years > 0 ? `${years}年` : ''}${months}個月（${result.totalDays}天）`
-    const text = `我的躺平人格是「${personality.emoji} ${personality.name}」！\n在${city.name}可以躺平 ${durationText}\n比 ${percentile}% 的人能躺更久\n\n${personality.oneliner}\n\nhttps://tangping.zeabur.app\n你也來算算你能躺多久 👆\n#躺平模擬器 #社畜必算 #不想上班`
+    const text = `我的躺平人格是「${personality.emoji} ${personality.name}」！\n在${city.name}可以躺平 ${durationText}\n比 ${percentile}% 的人能躺更久\n\n${personality.oneliner}\n\n${shareUrl}\n你也來算算你能躺多久 👆\n#躺平模擬器 #社畜必算 #不想上班`
     try {
       await navigator.clipboard.writeText(text)
       setCopied(true)
@@ -401,6 +409,7 @@ export default function ResultView({ result, city, onReset }: Props) {
             personality={personality}
             percentile={percentile}
             cityName={city.name}
+            shareUrl={shareUrl}
             onClose={() => setShowShareCard(false)}
           />
         )}

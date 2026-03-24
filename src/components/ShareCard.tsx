@@ -9,6 +9,7 @@ interface Props {
   personality: TangpingPersonality
   percentile: number
   cityName: string
+  shareUrl: string
   onClose: () => void
 }
 
@@ -17,6 +18,7 @@ export default function ShareCard({
   personality,
   percentile,
   cityName,
+  shareUrl,
   onClose,
 }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
@@ -105,7 +107,7 @@ export default function ShareCard({
             files: [file],
             title: '躺平模擬器',
             text: `我的躺平人格是「${personality.emoji} ${personality.name}」！在${cityName}可以躺平`,
-            url: 'https://tangping.zeabur.app',
+            url: shareUrl,
           })
         } catch {
           downloadBlob(blob)
