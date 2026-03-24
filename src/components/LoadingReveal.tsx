@@ -4,6 +4,14 @@ import { getPersonality } from '@/data/personality'
 import type { SimulationResult } from '@/utils/simulator'
 import type { CityData } from '@/data/constants'
 
+const LOADING_MESSAGES = [
+  '計算你的躺平潛力...',
+  '正在燃燒你的存款...',
+  '計算你的擺爛額度...',
+  '看看你離財富自由還有多遠...',
+  '正在模擬你的平行宇宙...',
+]
+
 interface Props {
   result: SimulationResult
   city: CityData
@@ -21,6 +29,11 @@ export default function LoadingReveal({ result, city, onDone }: Props) {
         minLivingCost: city.minLivingCost,
       }),
     [result, city],
+  )
+
+  const loadingMessage = useMemo(
+    () => LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)],
+    [],
   )
 
   useEffect(() => {
@@ -53,7 +66,7 @@ export default function LoadingReveal({ result, city, onDone }: Props) {
         transition={{ duration: 1.5, times: [0, 0.2, 0.7, 1] }}
         className="text-xl text-muted-foreground"
       >
-        計算你的躺平潛力...
+        {loadingMessage}
       </motion.p>
 
       {/* Pulsing dots */}

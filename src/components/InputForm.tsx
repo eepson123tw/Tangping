@@ -1,6 +1,15 @@
-import { useState, lazy, Suspense } from 'react'
+import { useState, useMemo, lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { CITIES, MEDIAN_SALARY, type CityData } from '@/data/constants'
+
+const SUBTITLES = [
+  '輸入你的存款，看看你能躺多久',
+  '不想捲了？算算你能躺多久',
+  '什麼都漲只有薪水不漲，不如先躺一下',
+  '社畜的盡頭是躺平',
+  '算完你就知道，為什麼不能裸辭',
+  '離職前先算一下，理性躺平',
+]
 import { simulate, type SimulationResult } from '@/utils/simulator'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -29,6 +38,7 @@ export default function InputForm({ onResult }: Props) {
   const [error, setError] = useState('')
 
   const selectedCity = CITIES[cityIndex]
+  const subtitle = useMemo(() => SUBTITLES[Math.floor(Math.random() * SUBTITLES.length)], [])
 
   const handleSubmit = () => {
     const savingsNum = parseFormattedNumber(savings)
@@ -86,7 +96,7 @@ export default function InputForm({ onResult }: Props) {
           躺平模擬器
         </h1>
         <p className="text-muted-foreground text-base md:text-lg">
-          輸入你的存款，看看你能躺多久
+          {subtitle}
         </p>
       </motion.div>
 

@@ -58,6 +58,9 @@ export default function ResultView({ result, city, onReset }: Props) {
 
   // 趣味對照
   const bobaCount = Math.round(result.totalSpent / 65)
+  const lunchBoxCount = Math.round(result.totalSpent / 100)
+  // 台北平均房價約 75 萬/坪（2025 年）
+  const taipeiPing = (result.initialSavings / 750000).toFixed(1)
 
   const [copied, setCopied] = useState(false)
 
@@ -65,7 +68,7 @@ export default function ResultView({ result, city, onReset }: Props) {
     const durationText = result.totalDays < 30
       ? `${result.totalDays} 天`
       : `${years > 0 ? `${years}年` : ''}${months}個月（${result.totalDays}天）`
-    const text = `我的躺平人格是「${personality.emoji} ${personality.name}」！\n在${city.name}可以躺平 ${durationText}\n比 ${percentile}% 的人能躺更久\n\n${personality.oneliner}\n\n躺平模擬器 → tangping.zeabur.app`
+    const text = `我的躺平人格是「${personality.emoji} ${personality.name}」！\n在${city.name}可以躺平 ${durationText}\n比 ${percentile}% 的人能躺更久\n\n${personality.oneliner}\n\n你也來算算 → tangping.zeabur.app\n#躺平模擬器 #社畜必算 #不想上班`
     try {
       await navigator.clipboard.writeText(text)
       setCopied(true)
@@ -240,10 +243,11 @@ export default function ResultView({ result, city, onReset }: Props) {
               transition={{ delay: 0.45 }}
               className="glass-card rounded-xl py-3 px-4 text-center"
             >
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                🧋 相當於喝 <span className="text-accent font-bold">{bobaCount.toLocaleString('zh-TW')}</span> 杯手搖飲的人生
-                <br />
-                📉 通膨年蝕 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元，利息只多撐 {Math.round(result.totalInterestEarned / result.monthlyExpense)} 個月
+              <p className="text-xs text-muted-foreground leading-relaxed space-y-0.5">
+                <span className="block">🧋 相當於喝 <span className="text-accent font-bold">{bobaCount.toLocaleString('zh-TW')}</span> 杯手搖飲的人生</span>
+                <span className="block">🍱 或是吃 <span className="text-accent font-bold">{lunchBoxCount.toLocaleString('zh-TW')}</span> 個排骨便當</span>
+                <span className="block">🏠 你的存款在台北買得起 <span className="text-accent font-bold">{taipeiPing}</span> 坪{parseFloat(taipeiPing) < 1 ? '（連廁所都不夠）' : parseFloat(taipeiPing) < 3 ? '（大概一間廁所）' : ''}</span>
+                <span className="block">📉 通膨年蝕 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元，利息只多撐 {Math.round(result.totalInterestEarned / result.monthlyExpense)} 個月</span>
               </p>
             </motion.div>
 

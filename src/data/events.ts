@@ -22,6 +22,11 @@ const HONEYMOON_EVENTS: LifeEvent[] = [
   { text: '你第一次在週一早上十點還在睡覺，感覺像犯罪', month: 0, phase: 'honeymoon' },
   { text: '你開始研究怎麼自己煮飯', month: 2, phase: 'honeymoon' },
   { text: '你把所有社群媒體的前同事都設為「隱藏」', month: 1, phase: 'honeymoon' },
+  { text: '你把 LinkedIn 通知全部關掉了', month: 0, phase: 'honeymoon' },
+  { text: '你終於不用假裝對主管的冷笑話有反應了', month: 0, phase: 'honeymoon' },
+  { text: '你發現早上不用擠捷運的世界這麼美好', month: 1, phase: 'honeymoon' },
+  { text: '前同事在群組抱怨加班，你默默退出群組', month: 2, phase: 'honeymoon' },
+  { text: '你開始認真研究「被動收入」', month: 2, phase: 'honeymoon' },
 ]
 
 const REALITY_EVENTS: LifeEvent[] = [
@@ -37,6 +42,11 @@ const REALITY_EVENTS: LifeEvent[] = [
   { text: '你的信用卡被降額了', month: 9, phase: 'reality' },
   { text: '你發現全聯週三會員日打 88 折的規律', month: 7, phase: 'reality' },
   { text: '你把 Spotify Premium 降成免費版', month: 5, phase: 'reality' },
+  { text: '你把外送 App 解除安裝了，改去全聯買菜', month: 5, phase: 'reality' },
+  { text: '前同事在限動分享公司尾牙，你假裝沒看到', month: 8, phase: 'reality' },
+  { text: '手搖飲從大杯降級成中杯，再降成自己泡茶', month: 7, phase: 'reality' },
+  { text: '你在蝦皮刷免運券，精打細算到極致', month: 6, phase: 'reality' },
+  { text: '你的 Netflix 被共用帳號的朋友踢出去了', month: 9, phase: 'reality' },
 ]
 
 const ADAPTATION_EVENTS: LifeEvent[] = [
@@ -52,6 +62,11 @@ const ADAPTATION_EVENTS: LifeEvent[] = [
   { text: '你在路上遇到前同事，假裝在講電話避開', month: 16, phase: 'adaptation' },
   { text: '你發現圖書館冷氣免費又有 WiFi', month: 13, phase: 'adaptation' },
   { text: '你的衣櫃已經一年沒買新衣服了', month: 14, phase: 'adaptation' },
+  { text: '你開始在 YouTube 看「一天一百元挑戰」', month: 11, phase: 'adaptation' },
+  { text: '你學會了用電鍋做出七種料理', month: 12, phase: 'adaptation' },
+  { text: '你媽寄了一箱泡麵和罐頭過來，附紙條寫：加油', month: 15, phase: 'adaptation' },
+  { text: '你在公園認識了一群退休阿伯，加入他們的早操隊', month: 18, phase: 'adaptation' },
+  { text: '你開始覺得圖書館是世界上最棒的地方', month: 16, phase: 'adaptation' },
 ]
 
 const FINALE_EVENTS: LifeEvent[] = [
@@ -59,6 +74,8 @@ const FINALE_EVENTS: LifeEvent[] = [
   { text: '你開始認真看 104 的職缺了', month: -2, phase: 'finale' },
   { text: '你更新了已經生灰塵的履歷', month: -1, phase: 'finale' },
   { text: '你在面試時被問「這段空白期你在做什麼」', month: -1, phase: 'finale' },
+  { text: '你把 PTT 的 Salary 版加入我的最愛', month: -2, phase: 'finale' },
+  { text: '你的存款比你的體重還輕了', month: -3, phase: 'finale' },
 ]
 
 function shufflePick<T>(arr: T[], count: number): T[] {
@@ -158,6 +175,12 @@ const ENDINGS = [
   '你回去上班的第一天，同事問你「臉色怎麼這麼好」。',
   '你把「極簡生活」的 YouTube 頻道取消訂閱了。',
   '你在 LinkedIn 更新狀態：Open to Work。',
+  '你在面試時被問「對薪資有什麼期待」，你說「有就好」。',
+  '你設了一個鬧鐘，鈴聲是你以前最討厭的 Line 工作群通知聲。',
+  '你在 104 看到你之前公司的職缺，薪水居然加了兩千。',
+  '你開始懷念辦公室的免費咖啡。只有咖啡。',
+  '你打開求職網站，搜尋條件第一個勾的是「準時下班」。',
+  '你在 Dcard 發文：「躺平心得，不推薦。」',
 ]
 
 /**
