@@ -10,6 +10,8 @@ interface Props {
   percentile: number
   cityName: string
   shareUrl: string
+  /** 在地趣味對照文字（已格式化） */
+  funFactLine?: string
   onClose: () => void
 }
 
@@ -19,6 +21,7 @@ export default function ShareCard({
   percentile,
   cityName,
   shareUrl,
+  funFactLine,
   onClose,
 }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
@@ -283,6 +286,12 @@ export default function ShareCard({
               <p style={{ fontSize: 14, color: '#a8b8bc', fontStyle: 'italic', lineHeight: 1.5, padding: '0 8px', marginTop: 20, marginBottom: 0 }}>
                 「{personality.oneliner}」
               </p>
+
+              {funFactLine && result.totalDays > 0 && (
+                <p style={{ fontSize: 11, color: '#6a7a7e', marginTop: 12, marginBottom: 0, lineHeight: 1.4 }}>
+                  {funFactLine}
+                </p>
+              )}
             </div>
 
             {/* Bottom */}

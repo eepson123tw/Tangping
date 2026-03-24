@@ -435,6 +435,7 @@ export default function ResultView({ result, city, sharedView = false, sharedPer
             percentile={percentile}
             cityName={city.name}
             shareUrl={shareUrl}
+            funFactLine={localFunFacts[0] ? `${localFunFacts[0].emoji} ${localFunFacts[0].template.replace('{n}', Math.round(result.totalSpent / localFunFacts[0].unitPrice).toLocaleString('zh-TW'))}` : undefined}
             onClose={() => setShowShareCard(false)}
           />
         )}
