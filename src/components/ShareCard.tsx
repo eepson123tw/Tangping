@@ -237,30 +237,91 @@ export default function ShareCard({
                 </p>
               </div>
 
-              <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: '16px 20px', marginTop: 20, overflow: 'hidden' }}>
-                <p style={{ fontSize: 12, color: '#8a9a9e', marginBottom: 6, marginTop: 0 }}>
+              <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: '18px 20px 16px', marginTop: 20, overflow: 'hidden' }}>
+                <p style={{ fontSize: 12, color: '#8a9a9e', marginBottom: 8, marginTop: 0 }}>
                   在{cityName}可以躺
                 </p>
-                <p
-                  data-gradient-text
-                  style={{
-                    fontSize: result.capped ? 36 : 44,
-                    fontWeight: 900,
-                    background: `linear-gradient(90deg, ${personality.gradient[0]}, ${personality.gradient[1]})`,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    lineHeight: 1.1,
-                    margin: 0,
-                  }}
-                >
-                  {result.totalDays === 0
-                    ? '0 天'
-                    : result.capped
-                      ? '超過 100 年'
-                      : `${years > 0 ? `${years}年` : ''}${months}個月`}
-                </p>
+                {result.totalDays === 0 ? (
+                  <p
+                    data-gradient-text
+                    style={{
+                      fontSize: 44,
+                      fontWeight: 900,
+                      background: `linear-gradient(90deg, ${personality.gradient[0]}, ${personality.gradient[1]})`,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      lineHeight: 1.1,
+                      margin: 0,
+                    }}
+                  >
+                    0 天
+                  </p>
+                ) : result.capped ? (
+                  <p
+                    data-gradient-text
+                    style={{
+                      fontSize: 36,
+                      fontWeight: 900,
+                      background: `linear-gradient(90deg, ${personality.gradient[0]}, ${personality.gradient[1]})`,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      lineHeight: 1.1,
+                      margin: 0,
+                    }}
+                  >
+                    超過 100 年
+                  </p>
+                ) : (
+                  <div data-gradient-text style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 0, margin: 0 }}>
+                    {years > 0 && (
+                      <>
+                        <span style={{
+                          fontSize: 52,
+                          fontWeight: 900,
+                          background: `linear-gradient(90deg, ${personality.gradient[0]}, ${personality.gradient[1]})`,
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          lineHeight: 1,
+                        }}>
+                          {years}
+                        </span>
+                        <span style={{
+                          fontSize: 22,
+                          fontWeight: 700,
+                          background: `linear-gradient(90deg, ${personality.gradient[0]}, ${personality.gradient[1]})`,
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          lineHeight: 1,
+                          marginRight: 4,
+                        }}>
+                          年
+                        </span>
+                      </>
+                    )}
+                    <span style={{
+                      fontSize: 52,
+                      fontWeight: 900,
+                      background: `linear-gradient(90deg, ${personality.gradient[0]}, ${personality.gradient[1]})`,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      lineHeight: 1,
+                    }}>
+                      {months}
+                    </span>
+                    <span style={{
+                      fontSize: 22,
+                      fontWeight: 700,
+                      background: `linear-gradient(90deg, ${personality.gradient[0]}, ${personality.gradient[1]})`,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      lineHeight: 1,
+                    }}>
+                      個月
+                    </span>
+                  </div>
+                )}
                 {result.totalDays > 0 && !result.capped && (
-                  <p style={{ fontSize: 12, color: '#7a8a8e', marginTop: 4, marginBottom: 0 }}>
+                  <p style={{ fontSize: 12, color: '#7a8a8e', marginTop: 6, marginBottom: 0 }}>
                     約 {result.totalDays.toLocaleString('zh-TW')} 天
                   </p>
                 )}
