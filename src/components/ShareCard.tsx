@@ -282,7 +282,7 @@ export default function ShareCard({
             <div style={{ textAlign: 'center', width: '100%' }}>
               <p style={{ fontSize: 13, color: '#8a9a9e', margin: 0 }}>你也來躺平 →</p>
               <div style={{ width: 40, height: 1, background: 'rgba(255,255,255,0.1)', margin: '10px auto' }} />
-              <p style={{ fontSize: 12, color: '#7a8a8e', letterSpacing: 1, margin: 0 }}>tangping.zeabur.app</p>
+              <p style={{ fontSize: 12, color: '#7a8a8e', letterSpacing: 1, margin: 0 }}>https://tangping.zeabur.app</p>
             </div>
           </div>
         </div>
