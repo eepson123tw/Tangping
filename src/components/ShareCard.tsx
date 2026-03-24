@@ -234,14 +234,14 @@ export default function ShareCard({
                 </p>
               </div>
 
-              <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: '14px 20px', marginTop: 20 }}>
+              <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: '16px 20px', marginTop: 20, overflow: 'hidden' }}>
                 <p style={{ fontSize: 12, color: '#8a9a9e', marginBottom: 6, marginTop: 0 }}>
                   在{cityName}可以躺
                 </p>
                 <p
                   data-gradient-text
                   style={{
-                    fontSize: result.totalDays === 0 ? 56 : 44,
+                    fontSize: result.capped ? 36 : 44,
                     fontWeight: 900,
                     background: `linear-gradient(90deg, ${personality.gradient[0]}, ${personality.gradient[1]})`,
                     WebkitBackgroundClip: 'text',
