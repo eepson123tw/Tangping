@@ -65,7 +65,7 @@ export default function ResultView({ result, city, onReset }: Props) {
     const durationText = result.totalDays < 30
       ? `${result.totalDays} 天`
       : `${years > 0 ? `${years}年` : ''}${months}個月（${result.totalDays}天）`
-    const text = `我的躺平人格是「${personality.emoji} ${personality.name}」！\n在${city.name}可以躺平 ${durationText}\n比 ${percentile}% 的人能躺更久\n\n${personality.oneliner}\n\n躺平模擬器`
+    const text = `我的躺平人格是「${personality.emoji} ${personality.name}」！\n在${city.name}可以躺平 ${durationText}\n比 ${percentile}% 的人能躺更久\n\n${personality.oneliner}\n\n躺平模擬器 → tangping.zeabur.app`
     try {
       await navigator.clipboard.writeText(text)
       setCopied(true)
