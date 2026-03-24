@@ -101,7 +101,12 @@ export default function ShareCard({
       if (isMobile && navigator.share && navigator.canShare?.({ files: [new File([], '')] })) {
         try {
           const file = new File([blob], 'tangping-result.png', { type: 'image/png' })
-          await navigator.share({ files: [file], title: '躺平模擬器' })
+          await navigator.share({
+            files: [file],
+            title: '躺平模擬器',
+            text: `我的躺平人格是「${personality.emoji} ${personality.name}」！在${cityName}可以躺平`,
+            url: 'https://tangping.zeabur.app',
+          })
         } catch {
           downloadBlob(blob)
         }
