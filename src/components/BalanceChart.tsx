@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import type { MonthSnapshot } from '@/utils/simulator'
+import { formatCompact } from '@/utils/format'
 
 interface Props {
   timeline: MonthSnapshot[]
@@ -45,13 +46,13 @@ export default function BalanceChart({ timeline, className = '' }: Props) {
   // Find midpoint for annotation
   const halfMonthX = totalMonths > 0 ? (Math.floor(totalMonths / 2) / totalMonths) * 100 : 50
   const halfBalance = timeline[Math.floor(timeline.length / 2)]?.balance ?? 0
-  const halfBalanceLabel = `NT$ ${Math.round(halfBalance).toLocaleString('zh-TW')}`
+  const halfBalanceLabel = `NT$ ${formatCompact(Math.round(halfBalance))}`
 
   return (
     <div className={className}>
       <div className="flex justify-between items-baseline mb-2">
         <p className="text-xs font-medium text-foreground/80">存款餘額變化</p>
-        <span className="text-[10px] text-muted-foreground">NT$ {maxBalance.toLocaleString('zh-TW')}</span>
+        <span className="text-[10px] text-muted-foreground">NT$ {formatCompact(maxBalance)}</span>
       </div>
 
       <div className="relative rounded-lg overflow-hidden" style={{ background: 'rgba(255,255,255,0.02)' }}>

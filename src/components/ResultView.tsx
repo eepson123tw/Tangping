@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import type { SimulationResult } from '@/utils/simulator'
 import type { CityData } from '@/data/constants'
 import { SOCIAL_INSURANCE_MONTHLY } from '@/data/constants'
+import { formatCompact } from '@/utils/format'
 import { getPersonality } from '@/data/personality'
 import { getSavingsPercentile } from '@/data/percentile'
 import { generateTimeline, getRandomEnding } from '@/data/events'
@@ -60,14 +61,27 @@ export default function ResultView({ result, city, onReset }: Props) {
   const bobaCount = Math.round(result.totalSpent / 65)
   const lunchBoxCount = Math.round(result.totalSpent / 100)
   // 台北平均房價約 75 萬/坪（2025 年）
-  const taipeiPing = (result.initialSavings / 750000).toFixed(1)
+  const taipeiPingNum = result.initialSavings / 750000
+  const taipeiPing = taipeiPingNum.toFixed(1)
+  const taipeiPingNote =
+    taipeiPingNum < 1 ? '（連廁所都不夠）' :
+    taipeiPingNum < 3 ? '（大概一間廁所）' :
+    taipeiPingNum < 15 ? '（一間小套房）' :
+    taipeiPingNum < 50 ? '（一間正常的房子）' :
+    taipeiPingNum < 200 ? '（一層豪宅）' : '（你是地主嗎？）'
+  const interestMonths = Math.round(result.totalInterestEarned / result.monthlyExpense)
+  const interestLabel = interestMonths > 1200
+    ? '利息足以永遠撐下去'
+    : `利息只多撐 ${interestMonths} 個月`
 
   const [copied, setCopied] = useState(false)
 
   const handleCopyText = async () => {
-    const durationText = result.totalDays < 30
-      ? `${result.totalDays} 天`
-      : `${years > 0 ? `${years}年` : ''}${months}個月（${result.totalDays}天）`
+    const durationText = result.capped
+      ? '超過 100 年（財務自由！）'
+      : result.totalDays < 30
+        ? `${result.totalDays} 天`
+        : `${years > 0 ? `${years}年` : ''}${months}個月（${result.totalDays}天）`
     const text = `我的躺平人格是「${personality.emoji} ${personality.name}」！\n在${city.name}可以躺平 ${durationText}\n比 ${percentile}% 的人能躺更久\n\n${personality.oneliner}\n\n你也來算算 → tangping.zeabur.app\n#躺平模擬器 #社畜必算 #不想上班`
     try {
       await navigator.clipboard.writeText(text)
@@ -157,6 +171,10 @@ export default function ResultView({ result, city, onReset }: Props) {
                 <span className="text-5xl md:text-6xl font-black text-destructive">0</span>
                 <span className="text-lg text-muted-foreground font-medium">天</span>
               </>
+            ) : result.capped ? (
+              <span className="text-4xl md:text-5xl font-black bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
+                超過 100 年
+              </span>
             ) : result.totalDays < 30 ? (
               <>
                 <CountUp
@@ -188,7 +206,16 @@ export default function ResultView({ result, city, onReset }: Props) {
             )}
           </div>
 
-          {result.totalDays >= 30 && (
+          {result.capped ? (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="text-accent text-sm mt-1 font-medium"
+            >
+              你的利息就夠生活了，財務自由！
+            </motion.p>
+          ) : result.totalDays >= 30 && (
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -246,8 +273,8 @@ export default function ResultView({ result, city, onReset }: Props) {
               <p className="text-xs text-muted-foreground leading-relaxed space-y-0.5">
                 <span className="block">🧋 相當於喝 <span className="text-accent font-bold">{bobaCount.toLocaleString('zh-TW')}</span> 杯手搖飲的人生</span>
                 <span className="block">🍱 或是吃 <span className="text-accent font-bold">{lunchBoxCount.toLocaleString('zh-TW')}</span> 個排骨便當</span>
-                <span className="block">🏠 你的存款在台北買得起 <span className="text-accent font-bold">{taipeiPing}</span> 坪{parseFloat(taipeiPing) < 1 ? '（連廁所都不夠）' : parseFloat(taipeiPing) < 3 ? '（大概一間廁所）' : ''}</span>
-                <span className="block">📉 通膨年蝕 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元，利息只多撐 {Math.round(result.totalInterestEarned / result.monthlyExpense)} 個月</span>
+                <span className="block">🏠 你的存款在台北買得起 <span className="text-accent font-bold">{taipeiPing}</span> 坪{taipeiPingNote}</span>
+                <span className="block">📉 通膨年蝕 {(result.monthlyExpense * 0.017 * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 })} 元，{interestLabel}</span>
               </p>
             </motion.div>
 
@@ -268,8 +295,8 @@ export default function ResultView({ result, city, onReset }: Props) {
               transition={{ delay: 0.6 }}
               className="grid grid-cols-2 gap-3"
             >
-              <StatCard label="總花費" value={result.totalSpent} prefix="NT$ " color="#ff6b6b" icon="💸" />
-              <StatCard label="利息收入" value={result.totalInterestEarned} prefix="NT$ " color="#4db8a4" icon="🏦" />
+              <StatCard label="總花費" value={result.totalSpent} prefix="NT$ " color="#ff6b6b" icon="💸" compact />
+              <StatCard label="利息收入" value={result.totalInterestEarned} prefix="NT$ " color="#4db8a4" icon="🏦" compact />
             </motion.div>
           </>
         )}
@@ -372,20 +399,30 @@ function StatCard({
   prefix = '',
   color,
   icon,
+  compact: useCompact,
 }: {
   label: string
   value: number
   prefix?: string
   color: string
   icon: string
+  compact?: boolean
 }) {
+  const displayValue = useCompact && value >= 1e5
+    ? `${prefix}${formatCompact(value)}`
+    : undefined
+
   return (
     <div className="glass-card rounded-xl py-3 px-4">
       <div className="flex items-center gap-1.5 mb-1">
         <span className="text-xs">{icon}</span>
         <p className="text-xs text-muted-foreground">{label}</p>
       </div>
-      <CountUp value={value} prefix={prefix} className="text-sm font-bold truncate block" duration={2} />
+      {displayValue ? (
+        <span className="text-sm font-bold truncate block">{displayValue}</span>
+      ) : (
+        <CountUp value={value} prefix={prefix} className="text-sm font-bold truncate block" duration={2} />
+      )}
       <div className="mt-1.5 h-0.5 rounded-full" style={{ backgroundColor: color, opacity: 0.5 }} />
     </div>
   )

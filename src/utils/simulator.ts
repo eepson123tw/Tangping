@@ -33,6 +33,8 @@ export interface SimulationResult {
   initialSavings: number
   /** 每月基本開銷（用於人格判定） */
   monthlyExpense: number
+  /** 是否達到 100 年上限（利息 > 支出，實質財務自由） */
+  capped: boolean
 }
 
 /**
@@ -136,5 +138,6 @@ export function simulate(input: SimulationInput): SimulationResult {
     totalInterestEarned,
     initialSavings: savings,
     monthlyExpense: baseExpense,
+    capped: balance > 0 && month >= MAX_MONTHS,
   }
 }
