@@ -86,11 +86,10 @@ test.describe('正常躺平結果', () => {
   test('存款 100 萬 → 手搖飲數量合理（> 0 且非天文數字）', async ({ page }) => {
     await submitAndWaitResult(page, '1000000')
 
-    const bobaText = page.getByText('手搖飲')
-    await expect(bobaText).toBeVisible()
+    await expect(page.getByText('杯手搖飲的人生')).toBeVisible()
 
     // 取得手搖飲數量文字，確認數值合理
-    const funFactCard = page.locator('.glass-card', { hasText: '手搖飲' })
+    const funFactCard = page.locator('.glass-card', { hasText: '杯手搖飲的人生' })
     const text = await funFactCard.textContent()
     // 提取數字（可能包含逗號）
     const match = text?.match(/喝\s*([\d,]+)\s*杯/)

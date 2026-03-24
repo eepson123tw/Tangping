@@ -39,6 +39,8 @@ function App() {
   const [result, setResult] = useState<SimulationResult | null>(null)
   const [city, setCity] = useState<CityData | null>(null)
   const [sharedView, setSharedView] = useState(false)
+  const [sharedPersonalityId, setSharedPersonalityId] = useState<string | undefined>()
+  const [sharedPercentile, setSharedPercentile] = useState<number | undefined>()
 
   // Restore shared result from URL (?r=base64)
   // Only contains public display data — no savings/salary
@@ -65,6 +67,8 @@ function App() {
       setResult(r)
       setCity(c)
       setSharedView(true)
+      if (data.p) setSharedPersonalityId(data.p)
+      if (data.pct != null) setSharedPercentile(data.pct)
       setState('result')
     } catch { /* invalid param, ignore */ }
     window.history.replaceState({}, '', window.location.pathname)
@@ -97,7 +101,7 @@ function App() {
             <LoadingReveal key="loading" result={result} city={city} onDone={handleRevealDone} />
           )}
           {state === 'result' && result && (
-            <ResultView key="result" result={result} city={city!} sharedView={sharedView} onReset={handleReset} />
+            <ResultView key="result" result={result} city={city!} sharedView={sharedView} sharedPersonalityId={sharedPersonalityId} sharedPercentile={sharedPercentile} onReset={handleReset} />
           )}
         </AnimatePresence>
       </div>

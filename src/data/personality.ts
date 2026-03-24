@@ -141,6 +141,11 @@ const PERSONALITIES: TangpingPersonality[] = [
 const PERSONALITY_MAP = new Map(PERSONALITIES.map(p => [p.id, p]))
 const find = (id: string) => PERSONALITY_MAP.get(id)!
 
+/** 根據 ID 取得人格（用於分享連結還原） */
+export function getPersonalityById(id: string): TangpingPersonality | undefined {
+  return PERSONALITY_MAP.get(id)
+}
+
 /**
  * 根據模擬結果分配躺平人格
  * minLivingCost: 該城市官方最低生活費，用來做相對門檻判斷

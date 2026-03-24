@@ -4,7 +4,7 @@ import type { SimulationResult } from '@/utils/simulator'
 import type { CityData } from '@/data/constants'
 import { CITIES, SOCIAL_INSURANCE_MONTHLY } from '@/data/constants'
 import { formatCompact } from '@/utils/format'
-import { getPersonality } from '@/data/personality'
+import { getPersonality, getPersonalityById } from '@/data/personality'
 import { getSavingsPercentile } from '@/data/percentile'
 import { generateTimeline, getRandomEnding } from '@/data/events'
 import { Button } from '@/components/ui/button'
@@ -19,10 +19,12 @@ interface Props {
   result: SimulationResult
   city: CityData
   sharedView?: boolean
+  sharedPersonalityId?: string
+  sharedPercentile?: number
   onReset: () => void
 }
 
-export default function ResultView({ result, city, sharedView = false, onReset }: Props) {
+export default function ResultView({ result, city, sharedView = false, sharedPersonalityId, sharedPercentile, onReset }: Props) {
   const [sceneProgress, setSceneProgress] = useState(0)
   const [showShareCard, setShowShareCard] = useState(false)
 
@@ -33,6 +35,7 @@ export default function ResultView({ result, city, sharedView = false, onReset }
 
   const personality = useMemo(
     () =>
+      (sharedPersonalityId && getPersonalityById(sharedPersonalityId)) ||
       getPersonality({
         totalDays: result.totalDays,
         savings: result.initialSavings,
@@ -40,12 +43,12 @@ export default function ResultView({ result, city, sharedView = false, onReset }
         cityName: city.name,
         minLivingCost: city.minLivingCost,
       }),
-    [result, city],
+    [result, city, sharedPersonalityId],
   )
 
   const percentile = useMemo(
-    () => getSavingsPercentile(result.initialSavings),
-    [result.initialSavings],
+    () => sharedPercentile ?? getSavingsPercentile(result.initialSavings),
+    [result.initialSavings, sharedPercentile],
   )
 
   const lifeEvents = useMemo(
@@ -77,14 +80,14 @@ export default function ResultView({ result, city, sharedView = false, onReset }
 
   const [copied, setCopied] = useState(false)
 
-  // Build share URL — only public data (days + city), no financial info
+  // Build share URL — only public data (days + city + personality + percentile), no financial info
   const shareUrl = useMemo(() => {
     const cityIdx = CITIES.findIndex(c => c.name === city.name)
-    const data: Record<string, number> = { d: result.totalDays }
+    const data: Record<string, string | number> = { d: result.totalDays, p: personality.id, pct: percentile }
     if (cityIdx > 0) data.c = cityIdx
     const encoded = btoa(JSON.stringify(data))
     return `https://tangping.zeabur.app/?r=${encoded}`
-  }, [result, city])
+  }, [result, city, personality, percentile])
 
   const handleCopyText = async () => {
     const durationText = result.capped
